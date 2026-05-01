@@ -1,53 +1,33 @@
-# chenyihan.github.io
+chenyihan.github.io
+个人简历与作品集展示站点（求职专用），部署于GitHub Pages，简洁呈现个人技能与项目能力。
 
-个人作品集与简历展示站点，用于在线展示个人项目、技能与经历，支持静态部署与动态内容加载。
-
-项目介绍
-本项目是基于 GitHub Pages 搭建的个人简历与作品集展示网站，以简洁、现代的页面呈现个人信息、项目案例、技术能力等内容，适合求职、学术申请及个人品牌展示使用。站点采用纯前端技术实现，支持静态托管，同时可对接 CMS 实现内容动态管理。
-
-技术栈
-HTML：页面结构与语义化布局
-CSS：页面样式与响应式适配
-JavaScript：交互逻辑与动态加载
-Supabase：提供后端 CMS 与数据加载能力
-GitHub Pages：免费静态站点部署
-
-功能特性
-个人信息展示：头像、简介、联系方式、教育与工作经历
-作品集模块：项目封面、分类标签、视频 / 图片预览、排序展示
-动态内容加载：支持从 Supabase 拉取项目数据，无服务时优雅降级为静态内容
-响应式布局：适配 PC、平板、手机等不同设备访问
-轻量化部署：直接部署在 GitHub Pages，无需服务器，访问稳定
-
-项目结构
-plaintext
-chenyihan.github.io/
-├── index.html              # 主入口页面
-├── portfolio-loader.js     # 作品集动态加载与降级逻辑
-├── covers/                 # 项目封面图资源
-├── portfolio_pages/        # 项目详情页面
-├── supabase/               # Supabase 相关配置与脚本
-├── .gitattributes          # Git 属性配置
-├── .gitignore              # Git 忽略文件
-└── README.md               # 项目说明
-
-部署与使用
-Fork 本项目到你的 GitHub 账号
-修改 index.html 与相关资源，替换为个人信息、项目案例
-如需启用 Supabase 动态加载，配置 supabase 目录下的连接信息
-开启 GitHub Pages：Settings → Pages → Branch 选择 main /root
-访问 https:// 你的用户名.github.io/chenyihan.github.io 查看站点
-
-开发说明
-本地直接打开 index.html 即可预览效果
-portfolio-loader.js 会自动检测 Supabase 连接状态
-项目封面、视频封面统一放在 covers 目录，便于管理与替换
-
-更新日志
-优化第二行视频封面循环切换与标签排序逻辑
-新增 Supabase CMS 管理后台与作品集加载器
-完善静态降级策略，提升页面稳定性
-更新项目说明文档与基础结构
-
-许可证
-本项目仅供个人展示使用，如需借鉴或修改请保留原作者信息。
+项目简介
+  基于GitHub Pages搭建的个人展示站点，用于求职场景下，快速向面试官呈现个人技术栈、项目经验及个人信息，支持静态部署，可快速访问。
+  
+核心技术栈
+  - 前端：HTML（93.2%）、JavaScript（3.0%）
+  - 后端辅助：Supabase（CMS管理、数据加载）
+  - 部署：GitHub Pages（免费、稳定）
+  - 数据库相关：PLpgSQL（3.8%）
+  - 
+核心功能（求职重点）
+  - 个人信息展示：简洁呈现个人简介、技能、经历，适配求职场景
+  - 作品集展示：包含项目封面、分类标签，支持视频/图片预览
+  - 稳定兼容：动态加载降级策略，无服务时正常展示静态内容
+  - 快速部署：无需服务器，GitHub Pages一键启用
+  - 
+项目结构（精简版）
+  chenyihan.github.io/
+    ├── index.html              # 主页面（个人信息+作品集入口）
+    ├── portfolio-loader.js     # 动态加载与降级逻辑
+    ├── covers/                 # 项目封面资源
+    ├── portfolio_pages/        # 项目详情页
+    ├── supabase/               # Supabase配置（可选启用）
+    └── 基础配置文件（.gitattributes/.gitignore）
+    
+部署说明（快速上手）
+  1. Fork本项目至个人GitHub账号
+  2. 替换index.html及相关资源为个人信息、项目案例
+  3. GitHub仓库设置 → Pages → 选择main分支/root路径，启用部署
+  4. 访问个人站点，完成求职展示准备
+  注：本项目仅供个人求职展示使用，借鉴请保留原作者信息。
