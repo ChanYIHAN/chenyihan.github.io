@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>作品集管理后台 · 陈奕翰</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #1f2235;
+      --border: #2a2d3e;
+      --accent: #7c6af7;
+      --accent-hover: #9585ff;
+      --green: #4ade80;
+      --red: #f87171;
+      --amber: #fbbf24;
+      --text: #e8eaf0;
+      --text-muted: #8b8fa8;
+      --text-dim: #4a4d61;
+      --sidebar-w: 240px;
+      --header-h: 60px;
+      --radius: 12px;
+
+      /* 标签色 */
+      --tag-blue:   #3b82f6;
+      --tag-purple: #8b5cf6;
+      --tag-green:  #10b981;
+      --tag-amber:  #f59e0b;
+      --tag-pink:   #ec4899;
+      --tag-teal:   #14b8a6;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ===== 侧边栏 ===== */
+    .sidebar {
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-brand {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-brand .icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent), #63b3ed);
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .sidebar-brand h2 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .sidebar-brand p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .sidebar-nav {
+      padding: 12px 0;
+      flex: 1;
+    }
+
+    .nav-section-label {
+      padding: 8px 20px 4px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-dim);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      border-left: 2px solid transparent;
+      user-select: none;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+    .nav-item.active {
+      background: rgba(124,106,247,0.12);
+      color: var(--accent);
+      border-left-color: var(--accent);
+      font-weight: 500;
+    }
+    .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--border);
+      color: var(--text-muted);
+      font-size: 10px;
+      padding: 1px 7px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .sidebar-footer .user-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sidebar-footer .avatar {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--accent), #63b3ed);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .sidebar-footer .logout-btn {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .sidebar-footer .logout-btn:hover { background: rgba(248,113,113,0.1); color: var(--red); }
+
+    /* ===== 主区域 ===== */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      height: var(--header-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .header .breadcrumb {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .header .actions { margin-left: auto; display: flex; gap: 10px; }
+
+    /* 按钮 */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-secondary { background: var(--border); color: var(--text); }
+    .btn-secondary:hover { background: #3a3d52; }
+    .btn-danger { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
+    .btn-danger:hover { background: rgba(248,113,113,0.25); }
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* 内容区 */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 28px;
+    }
+
+    /* 视图页 */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ===== 统计卡片 ===== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .stat-icon.blue   { background: rgba(59,130,246,0.15); }
+    .stat-icon.purple { background: rgba(139,92,246,0.15); }
+    .stat-icon.green  { background: rgba(74,222,128,0.15); }
+    .stat-icon.amber  { background: rgba(251,191,36,0.15); }
+    .stat-num { font-size: 28px; font-weight: 700; line-height: 1; }
+    .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    /* ===== 工具栏 ===== */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 14px;
+      gap: 8px;
+      flex: 1;
+      min-width: 200px;
+    }
+    .search-box input {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      width: 100%;
+    }
+    .search-box input::placeholder { color: var(--text-dim); }
+
+    .filter-select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+    .filter-select:focus { border-color: var(--accent); }
+
+    /* ===== 作品表格 ===== */
+    .portfolio-table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .portfolio-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .portfolio-table th {
+      background: var(--surface2);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .portfolio-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(42,45,62,0.6);
+      font-size: 13px;
+      vertical-align: middle;
+    }
+    .portfolio-table tr:last-child td { border-bottom: none; }
+    .portfolio-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .cover-thumb {
+      width: 56px;
+      height: 40px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: var(--border);
+      display: block;
+    }
+    .cover-thumb-placeholder {
+      width: 56px;
+      height: 40px;
+      border-radius: 6px;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      font-size: 18px;
+    }
+
+    .item-title {
+      font-size: 13px;
+      font-weight: 500;
+      max-width: 280px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .item-link {
+      font-size: 11px;
+      color: var(--text-muted);
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+
+    /* 标签 */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      margin: 2px;
+    }
+    .tag-blue   { background: rgba(59,130,246,0.15);  color: #93c5fd; }
+    .tag-purple { background: rgba(139,92,246,0.15);  color: #c4b5fd; }
+    .tag-green  { background: rgba(16,185,129,0.15);  color: #6ee7b7; }
+    .tag-amber  { background: rgba(245,158,11,0.15);  color: #fcd34d; }
+    .tag-pink   { background: rgba(236,72,153,0.15);  color: #f9a8d4; }
+    .tag-teal   { background: rgba(20,184,166,0.15);  color: #5eead4; }
+
+    .section-badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .sb-graphic  { background: rgba(59,130,246,0.15);  color: #93c5fd; }
+    .sb-video    { background: rgba(139,92,246,0.15);  color: #c4b5fd; }
+    .sb-ip       { background: rgba(236,72,153,0.15);  color: #f9a8d4; }
+    .sb-planning { background: rgba(245,158,11,0.15);  color: #fcd34d; }
+
+    .visibility-toggle {
+      width: 36px;
+      height: 20px;
+      background: var(--border);
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: none;
+      flex-shrink: 0;
+    }
+    .visibility-toggle.on { background: var(--accent); }
+    .visibility-toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 16px; height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      transition: left 0.2s;
+    }
+    .visibility-toggle.on::after { left: 18px; }
+
+    .action-btns { display: flex; gap: 6px; align-items: center; }
+
+    /* ===== 空状态 ===== */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+    .empty-state .emoji { font-size: 48px; margin-bottom: 16px; }
+    .empty-state h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+    .empty-state p { font-size: 13px; }
+
+    /* ===== 分页 ===== */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .page-btns { display: flex; gap: 6px; }
+    .page-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      background: var(--border);
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .page-btn:hover { background: var(--accent); color: #fff; }
+    .page-btn.active { background: var(--accent); color: #fff; }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ===== 模态框 ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 32px;
+      position: relative;
+      transform: scale(0.95);
+      transition: transform 0.2s;
+    }
+    .modal-overlay.show .modal { transform: scale(1); }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .modal-header h2 { font-size: 18px; font-weight: 700; }
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--border);
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .modal-close:hover { background: rgba(248,113,113,0.2); color: var(--red); }
+
+    /* 表单样式 */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(124,106,247,0.1);
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .form-group select option { background: #1a1d27; }
+
+    /* 封面预览 */
+    .cover-preview-wrap {
+      position: relative;
+    }
+    .cover-preview {
+      width: 100%;
+      height: 160px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-top: 8px;
+      object-fit: cover;
+      display: none;
+    }
+    .cover-preview.show { display: block; }
+
+    /* 标签选择器 */
+    .tag-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .tag-option {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+      user-select: none;
+      opacity: 0.5;
+    }
+    .tag-option.selected { opacity: 1; }
+    .tag-option:hover { opacity: 0.8; }
+
+    /* 自定义标签输入 */
+    .custom-tag-input {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .custom-tag-input input {
+      flex: 1;
+    }
+
+    /* 模态底部 */
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Toast 通知 */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 9999;
+    }
+    .toast {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 260px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      animation: slideIn 0.3s ease;
+    }
+    .toast.success { border-left: 3px solid var(--green); }
+    .toast.error   { border-left: 3px solid var(--red); }
+    .toast.info    { border-left: 3px solid var(--accent); }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* 加载状态 */
+    .loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15,17,23,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius);
+      z-index: 10;
+    }
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .table-loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+
+    /* 标签管理视图 */
+    .tags-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .tag-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tag-card-left { display: flex; align-items: center; gap: 10px; }
+
+    .color-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .dot-blue   { background: var(--tag-blue); }
+    .dot-purple { background: var(--tag-purple); }
+    .dot-green  { background: var(--tag-green); }
+    .dot-amber  { background: var(--tag-amber); }
+    .dot-pink   { background: var(--tag-pink); }
+    .dot-teal   { background: var(--tag-teal); }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .sidebar { width: 200px; }
+      .form-row { grid-template-columns: 1fr; }
+      .portfolio-table th:nth-child(5),
+      .portfolio-table td:nth-child(5),
+      .portfolio-table th:nth-child(3),
+      .portfolio-table td:nth-child(3) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 侧边栏 -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="icon">✦</div>
+      <h2>作品集管理后台</h2>
+      <p>陈奕翰 · Portfolio CMS</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">概览</div>
+      <div class="nav-item active" data-view="dashboard">
+        <span class="icon">📊</span>
+        <span>数据概览</span>
+      </div>
+
+      <div class="nav-section-label" style="margin-top:8px">内容管理</div>
+      <div class="nav-item" data-view="all">
+        <span class="icon">📋</span>
+        <span>全部作品</span>
+        <span class="nav-badge" id="badge-all">0</span>
+      </div>
+      <div class="nav-item" data-view="graphic">
+        <span class="icon">📝</span>
+        <span>图文作品集</span>
+        <span class="nav-badge" id="badge-graphic">0</span>
+      </div>
+      <div class="nav-item" data-view="video">
+        <span class="icon">🎬</span>
+        <span>视频作品集</span>
+        <span class="nav-badge" id="badge-video">0</span>
+      </div>
+      <div class="nav-item" data-view="ip">
+        <span class="icon">💡</span>
+        <span>IP 案例</span>
+        <span class="nav-badge" id="badge-ip">0</span>
+      </div>
+      <div class="nav-item" data-view="planning">
+        <span class="icon">📐</span>
+        <span>策划方案</span>
+        <span class="nav-badge" id="badge-planning">0</span>
+      </div>
+
+      <div class="nav-section-label" style="margin-top:8px">设置</div>
+      <div class="nav-item" data-view="tags">
+        <span class="icon">🏷️</span>
+        <span>标签管理</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="avatar" id="avatarInitial">A</div>
+        <span id="adminUsername">admin</span>
+        <button class="logout-btn" onclick="logout()">退出</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 主区域 -->
+  <div class="main">
+    <!-- Header -->
+    <header class="header">
+      <div>
+        <h1 id="viewTitle">数据概览</h1>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary" id="refreshBtn" onclick="refreshData()">
+          ↻ 刷新
+        </button>
+        <button class="btn btn-primary" id="addBtn" onclick="openAddModal()" style="display:none">
+          + 新增作品
+        </button>
+      </div>
+    </header>
+
+    <!-- 内容区 -->
+    <div class="content">
+
+      <!-- 数据概览 -->
+      <div class="view active" id="view-dashboard">
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card">
+            <div class="stat-icon blue">📝</div>
+            <div>
+              <div class="stat-num" id="stat-total">-</div>
+              <div class="stat-label">作品总数</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon blue">📄</div>
+            <div>
+              <div class="stat-num" id="stat-graphic">-</div>
+              <div class="stat-label">图文作品</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon purple">🎬</div>
+            <div>
+              <div class="stat-num" id="stat-video">-</div>
+              <div class="stat-label">视频作品</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">👁️</div>
+            <div>
+              <div class="stat-num" id="stat-visible">-</div>
+              <div class="stat-label">已显示</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-top:4px;">
+          <h3 style="font-size:14px;margin-bottom:16px;color:var(--text-muted)">最近添加的作品</h3>
+          <div id="recentItems"></div>
+        </div>
+      </div>
+
+      <!-- 作品列表视图 -->
+      <div class="view" id="view-list">
+        <div class="toolbar">
+          <div class="search-box">
+            <span>🔍</span>
+            <input type="text" id="searchInput" placeholder="搜索标题或链接..." oninput="filterItems()">
+          </div>
+          <select class="filter-select" id="categoryFilter" onchange="filterItems()">
+            <option value="">全部子分类</option>
+          </select>
+          <select class="filter-select" id="visibilityFilter" onchange="filterItems()">
+            <option value="">全部状态</option>
+            <option value="true">已显示</option>
+            <option value="false">已隐藏</option>
+          </select>
+        </div>
+
+        <div class="portfolio-table-wrap" id="tableWrap">
+          <table class="portfolio-table">
+            <thead>
+              <tr>
+                <th style="width:70px">封面</th>
+                <th>标题 / 链接</th>
+                <th>分类</th>
+                <th>标签</th>
+                <th style="width:70px">排序</th>
+                <th style="width:70px">显示</th>
+                <th style="width:120px">操作</th>
+              </tr>
+            </thead>
+            <tbody id="itemsTableBody">
+              <tr><td colspan="7" class="table-loading">加载中...</td></tr>
+            </tbody>
+          </table>
+          <div class="pagination" id="pagination">
+            <span id="paginationInfo">共 0 条</span>
+            <div class="page-btns" id="pageBtns"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 标签管理 -->
+      <div class="view" id="view-tags">
+        <div class="toolbar">
+          <button class="btn btn-primary" onclick="openAddTagModal()">+ 新增标签</button>
+        </div>
+        <div class="tags-grid" id="tagsGrid">
+          <div style="text-align:center;padding:40px;color:var(--text-muted);grid-column:1/-1">加载中...</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== 新增/编辑作品 Modal ===== -->
+  <div class="modal-overlay" id="itemModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">新增作品</h2>
+        <button class="modal-close" onclick="closeModal('itemModal')">✕</button>
+      </div>
+
+      <form id="itemForm">
+        <input type="hidden" id="editId">
+
+        <div class="form-row">
+          <div class="form-group full">
+            <label>作品标题 *</label>
+            <input type="text" id="fTitle" placeholder="输入作品标题" required>
+          </div>
+
+          <div class="form-group full">
+            <label>作品链接</label>
+            <input type="url" id="fLink" placeholder="https://...">
+          </div>
+
+          <div class="form-group">
+            <label>所属版块 *</label>
+            <select id="fSection" onchange="updateCategoryOptions()" required>
+              <option value="">请选择版块</option>
+              <option value="graphic">📝 图文作品集</option>
+              <option value="video">🎬 视频作品集</option>
+              <option value="ip">💡 IP 案例</option>
+              <option value="planning">📐 策划方案</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>子分类</label>
+            <select id="fCategory">
+              <option value="">请先选择版块</option>
+            </select>
+          </div>
+
+          <div class="form-group full">
+            <label>封面图 URL</label>
+            <input type="text" id="fCoverUrl" placeholder="输入图片 URL 或上传到 Supabase Storage 后填入" oninput="previewCover()">
+            <img id="coverPreviewImg" class="cover-preview" alt="封面预览">
+          </div>
+
+          <div class="form-group full">
+            <label>标签</label>
+            <div class="tag-selector" id="tagSelector"></div>
+            <div class="custom-tag-input">
+              <input type="text" id="customTagInput" placeholder="自定义标签名">
+              <select id="customTagColor" style="width:130px">
+                <option value="tag-blue">蓝色</option>
+                <option value="tag-purple">紫色</option>
+                <option value="tag-green">绿色</option>
+                <option value="tag-amber">琥珀</option>
+                <option value="tag-pink">粉色</option>
+                <option value="tag-teal">青色</option>
+              </select>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="addCustomTag()">添加</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>排序序号</label>
+            <input type="number" id="fOrder" value="0" min="0">
+          </div>
+
+          <div class="form-group">
+            <label>是否显示</label>
+            <select id="fVisible">
+              <option value="true">显示</option>
+              <option value="false">隐藏</option>
+            </select>
+          </div>
+        </div>
+      </form>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('itemModal')">取消</button>
+        <button class="btn btn-primary" id="saveItemBtn" onclick="saveItem()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 新增标签 Modal -->
+  <div class="modal-overlay" id="tagModal">
+    <div class="modal" style="max-width:400px">
+      <div class="modal-header">
+        <h2>新增标签</h2>
+        <button class="modal-close" onclick="closeModal('tagModal')">✕</button>
+      </div>
+      <div class="form-group">
+        <label>标签名称 *</label>
+        <input type="text" id="tagName" placeholder="例如：评测">
+      </div>
+      <div class="form-group">
+        <label>标签颜色</label>
+        <select id="tagColor">
+          <option value="tag-blue">🔵 蓝色</option>
+          <option value="tag-purple">🟣 紫色</option>
+          <option value="tag-green">🟢 绿色</option>
+          <option value="tag-amber">🟡 琥珀</option>
+          <option value="tag-pink">🩷 粉色</option>
+          <option value="tag-teal">🩵 青色</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('tagModal')">取消</button>
+        <button class="btn btn-primary" onclick="saveTag()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 删除确认 Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal" style="max-width:380px">
+      <div class="modal-header">
+        <h2 style="color:var(--red)">⚠️ 确认删除</h2>
+        <button class="modal-close" onclick="closeModal('deleteModal')">✕</button>
+      </div>
+      <p style="color:var(--text-muted);font-size:14px;line-height:1.6">
+        确定要删除作品 <strong id="deleteItemTitle" style="color:var(--text)"></strong> 吗？此操作无法撤销。
+      </p>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('deleteModal')">取消</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">确认删除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast 容器 -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="config.js"></script>
+  <script>
+    // ====================================================
+    //  Supabase 初始化（使用原生 fetch，无需 SDK）
+    // ====================================================
+    const SB_URL    = SUPABASE_CONFIG.url;
+    const SB_ANON   = SUPABASE_CONFIG.anonKey;
+    const SB_SVCKEY = SUPABASE_CONFIG.serviceKey;
+
+    // 使用 service_role key 进行管理操作（绕过 RLS）
+    async function sbFetch(path, method = 'GET', body = null, useService = true) {
+      const key = useService ? SB_SVCKEY : SB_ANON;
+      const opts = {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': key,
+          'Authorization': `Bearer ${key}`,
+          'Prefer': method === 'POST' ? 'return=representation' : '',
+        }
+      };
+      if (body) opts.body = JSON.stringify(body);
+      const res = await fetch(`${SB_URL}/rest/v1/${path}`, opts);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `HTTP ${res.status}`);
+      }
+      if (method === 'DELETE' || res.status === 204) return null;
+      return res.json();
+    }
+
+    // ====================================================
+    //  认证检查
+    // ====================================================
+    if (sessionStorage.getItem('admin_logged_in') !== 'true') {
+      location.href = 'login.html';
+    }
+
+    const username = sessionStorage.getItem('admin_user') || 'admin';
+    document.getElementById('adminUsername').textContent = username;
+    document.getElementById('avatarInitial').textContent = username[0].toUpperCase();
+
+    function logout() {
+      sessionStorage.clear();
+      location.href = 'login.html';
+    }
+
+    // ====================================================
+    //  全局状态
+    // ====================================================
+    let currentView = 'dashboard';
+    let allItems    = [];
+    let allTags     = [];
+    let allCats     = [];
+    let filteredItems = [];
+    let currentPage   = 1;
+    const PAGE_SIZE   = 15;
+    let deleteTargetId = null;
+    let selectedTags  = []; // { name, color }
+
+    const SECTION_LABELS = {
+      graphic:  '图文作品集',
+      video:    '视频作品集',
+      ip:       'IP 案例',
+      planning: '策划方案'
+    };
+
+    // ====================================================
+    //  导航
+    // ====================================================
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const view = item.dataset.view;
+        switchView(view);
+      });
+    });
+
+    function switchView(view) {
+      currentView = view;
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view));
+
+      // 切换内容区
+      document.getElementById('view-dashboard').classList.remove('active');
+      document.getElementById('view-list').classList.remove('active');
+      document.getElementById('view-tags').classList.remove('active');
+
+      const addBtn = document.getElementById('addBtn');
+
+      if (view === 'dashboard') {
+        document.getElementById('view-dashboard').classList.add('active');
+        document.getElementById('viewTitle').textContent = '数据概览';
+        addBtn.style.display = 'none';
+        loadDashboard();
+      } else if (view === 'tags') {
+        document.getElementById('view-tags').classList.add('active');
+        document.getElementById('viewTitle').textContent = '标签管理';
+        addBtn.style.display = 'none';
+        loadTags();
+      } else {
+        document.getElementById('view-list').classList.add('active');
+        addBtn.style.display = '';
+        const label = view === 'all' ? '全部作品' : SECTION_LABELS[view] || view;
+        document.getElementById('viewTitle').textContent = label;
+        loadItems(view);
+      }
+    }
+
+    function refreshData() {
+      switchView(currentView);
+    }
+
+    // ====================================================
+    //  数据加载
+    // ====================================================
+    async function loadDashboard() {
+      try {
+        const items = await sbFetch('portfolio_items?select=id,section,is_visible');
+        const total   = items.length;
+        const graphic = items.filter(i => i.section === 'graphic').length;
+        const video   = items.filter(i => i.section === 'video').length;
+        const visible = items.filter(i => i.is_visible).length;
+
+        document.getElementById('stat-total').textContent   = total;
+        document.getElementById('stat-graphic').textContent = graphic;
+        document.getElementById('stat-video').textContent   = video;
+        document.getElementById('stat-visible').textContent = visible;
+
+        // 更新侧边栏 badge
+        document.getElementById('badge-all').textContent     = total;
+        document.getElementById('badge-graphic').textContent = graphic;
+        document.getElementById('badge-video').textContent   = video;
+        document.getElementById('badge-ip').textContent      = items.filter(i => i.section === 'ip').length;
+        document.getElementById('badge-planning').textContent = items.filter(i => i.section === 'planning').length;
+
+        // 最近作品
+        const recent = await sbFetch('portfolio_items?select=id,title,section,created_at&order=created_at.desc&limit=5');
+        const html = recent.map(item => `
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+            <span class="section-badge sb-${item.section}">${SECTION_LABELS[item.section]}</span>
+            <span style="font-size:13px">${escHtml(item.title)}</span>
+            <span style="margin-left:auto;font-size:11px;color:var(--text-muted)">${formatDate(item.created_at)}</span>
+          </div>
+        `).join('');
+        document.getElementById('recentItems').innerHTML = html || '<p style="color:var(--text-muted);font-size:13px;padding:12px 0">暂无数据</p>';
+      } catch(e) {
+        showToast('加载数据失败：' + e.message, 'error');
+      }
+    }
+
+    async function loadItems(section) {
+      document.getElementById('itemsTableBody').innerHTML = '<tr><td colspan="7" class="table-loading"><div class="spinner" style="margin:auto"></div></td></tr>';
+
+      try {
+        // 加载分类
+        allCats = await sbFetch('portfolio_categories?order=section,sort_order');
+
+        let url = 'portfolio_items?order=section,sort_order,created_at.desc';
+        if (section !== 'all') url += `&section=eq.${section}`;
+
+        allItems = await sbFetch(url);
+        filteredItems = [...allItems];
+
+        // 更新分类筛选器
+        updateCategoryFilter(section);
+
+        currentPage = 1;
+        renderTable();
+      } catch(e) {
+        document.getElementById('itemsTableBody').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--red)">加载失败：${e.message}</td></tr>`;
+      }
+    }
+
+    function updateCategoryFilter(section) {
+      const sel = document.getElementById('categoryFilter');
+      sel.innerHTML = '<option value="">全部子分类</option>';
+      const cats = section === 'all' ? allCats : allCats.filter(c => c.section === section);
+      cats.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.name;
+        opt.textContent = (c.icon || '') + ' ' + c.name;
+        sel.appendChild(opt);
+      });
+    }
+
+    function filterItems() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const cat    = document.getElementById('categoryFilter').value;
+      const vis    = document.getElementById('visibilityFilter').value;
+
+      filteredItems = allItems.filter(item => {
+        const matchSearch = !search || item.title.toLowerCase().includes(search) || (item.link || '').toLowerCase().includes(search);
+        const matchCat    = !cat || item.category === cat;
+        const matchVis    = vis === '' || String(item.is_visible) === vis;
+        return matchSearch && matchCat && matchVis;
+      });
+      currentPage = 1;
+      renderTable();
+    }
+
+    function renderTable() {
+      const start = (currentPage - 1) * PAGE_SIZE;
+      const items = filteredItems.slice(start, start + PAGE_SIZE);
+      const tbody = document.getElementById('itemsTableBody');
+
+      if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="emoji">📭</div><h3>暂无作品</h3><p>点击「新增作品」添加第一个吧</p></div></td></tr>`;
+      } else {
+        tbody.innerHTML = items.map(item => renderRow(item)).join('');
+      }
+
+      renderPagination();
+    }
+
+    function renderRow(item) {
+      const cover = item.cover_url
+        ? `<img class="cover-thumb" src="${escHtml(item.cover_url)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        + `<div class="cover-thumb-placeholder" style="display:none">🖼️</div>`
+        : `<div class="cover-thumb-placeholder">🖼️</div>`;
+
+      const tags = (item.tags || []).map((t, i) => {
+        const color = (item.tag_colors || [])[i] || 'tag-blue';
+        return `<span class="tag ${color}">${escHtml(t)}</span>`;
+      }).join('');
+
+      const sectionBadge = `<span class="section-badge sb-${item.section}">${SECTION_LABELS[item.section] || item.section}</span>`;
+      const catText = item.category ? `<div style="font-size:11px;color:var(--text-muted);margin-top:4px">${escHtml(item.category)}</div>` : '';
+
+      return `
+        <tr data-id="${item.id}">
+          <td>${cover}</td>
+          <td>
+            <div class="item-title" title="${escHtml(item.title)}">${escHtml(item.title)}</div>
+            ${item.link ? `<a class="item-link" href="${escHtml(item.link)}" target="_blank" title="${escHtml(item.link)}">↗ ${escHtml(item.link)}</a>` : ''}
+          </td>
+          <td>${sectionBadge}${catText}</td>
+          <td><div style="max-width:200px">${tags || '<span style="color:var(--text-dim);font-size:12px">无标签</span>'}</div></td>
+          <td style="text-align:center;color:var(--text-muted)">${item.sort_order}</td>
+          <td>
+            <button class="visibility-toggle ${item.is_visible ? 'on' : ''}"
+              onclick="toggleVisibility('${item.id}', ${!item.is_visible})"
+              title="${item.is_visible ? '点击隐藏' : '点击显示'}">
+            </button>
+          </td>
+          <td>
+            <div class="action-btns">
+              <button class="btn btn-secondary btn-sm" onclick="openEditModal('${item.id}')">编辑</button>
+              <button class="btn btn-danger btn-sm" onclick="openDeleteModal('${item.id}', '${escJs(item.title)}')">删除</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    function renderPagination() {
+      const total = filteredItems.length;
+      const totalPages = Math.ceil(total / PAGE_SIZE);
+      document.getElementById('paginationInfo').textContent = `共 ${total} 条`;
+
+      const container = document.getElementById('pageBtns');
+      container.innerHTML = '';
+
+      if (totalPages <= 1) return;
+
+      const prev = document.createElement('button');
+      prev.className = 'page-btn';
+      prev.textContent = '‹';
+      prev.disabled = currentPage === 1;
+      prev.onclick = () => { currentPage--; renderTable(); };
+      container.appendChild(prev);
+
+      for (let i = 1; i <= totalPages; i++) {
+        if (totalPages > 7 && Math.abs(i - currentPage) > 2 && i !== 1 && i !== totalPages) {
+          if (i === 2 || i === totalPages - 1) {
+            const dots = document.createElement('span');
+            dots.textContent = '…';
+            dots.style.cssText = 'padding:0 4px;color:var(--text-dim);line-height:30px';
+            container.appendChild(dots);
+          }
+          continue;
+        }
+        const btn = document.createElement('button');
+        btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
+        btn.textContent = i;
+        btn.onclick = (pg => () => { currentPage = pg; renderTable(); })(i);
+        container.appendChild(btn);
+      }
+
+      const next = document.createElement('button');
+      next.className = 'page-btn';
+      next.textContent = '›';
+      next.disabled = currentPage === totalPages;
+      next.onclick = () => { currentPage++; renderTable(); };
+      container.appendChild(next);
+    }
+
+    // ====================================================
+    //  标签加载
+    // ====================================================
+    async function loadTags() {
+      document.getElementById('tagsGrid').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);grid-column:1/-1">加载中...</div>';
+      try {
+        allTags = await sbFetch('portfolio_tags?order=name');
+        renderTagsGrid();
+      } catch(e) {
+        document.getElementById('tagsGrid').innerHTML = `<div style="color:var(--red);grid-column:1/-1;text-align:center;padding:40px">加载失败：${e.message}</div>`;
+      }
+    }
+
+    function renderTagsGrid() {
+      const html = allTags.map(tag => `
+        <div class="tag-card">
+          <div class="tag-card-left">
+            <div class="color-dot dot-${tag.color.replace('tag-','')}"></div>
+            <span class="tag ${tag.color}">${escHtml(tag.name)}</span>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="deleteTag('${tag.id}', '${escJs(tag.name)}')">删除</button>
+        </div>
+      `).join('');
+      document.getElementById('tagsGrid').innerHTML = html || '<div style="color:var(--text-muted);text-align:center;padding:40px;grid-column:1/-1">暂无标签</div>';
+    }
+
+    // ====================================================
+    //  添加 / 编辑作品 Modal
+    // ====================================================
+    async function openAddModal() {
+      await ensureTagsLoaded();
+      document.getElementById('modalTitle').textContent = '新增作品';
+      document.getElementById('editId').value = '';
+      document.getElementById('itemForm').reset();
+      document.getElementById('coverPreviewImg').classList.remove('show');
+      selectedTags = [];
+      renderTagSelector();
+      openModal('itemModal');
+    }
+
+    async function openEditModal(id) {
+      await ensureTagsLoaded();
+      const item = allItems.find(i => i.id === id);
+      if (!item) return;
+
+      document.getElementById('modalTitle').textContent = '编辑作品';
+      document.getElementById('editId').value = id;
+      document.getElementById('fTitle').value = item.title || '';
+      document.getElementById('fLink').value = item.link || '';
+      document.getElementById('fSection').value = item.section || '';
+      document.getElementById('fCoverUrl').value = item.cover_url || '';
+      document.getElementById('fOrder').value = item.sort_order || 0;
+      document.getElementById('fVisible').value = String(item.is_visible);
+
+      // 封面预览
+      if (item.cover_url) {
+        const img = document.getElementById('coverPreviewImg');
+        img.src = item.cover_url;
+        img.classList.add('show');
+      } else {
+        document.getElementById('coverPreviewImg').classList.remove('show');
+      }
+
+      // 更新分类选项
+      updateCategoryOptions();
+      setTimeout(() => {
+        document.getElementById('fCategory').value = item.category || '';
+      }, 50);
+
+      // 恢复标签
+      selectedTags = (item.tags || []).map((t, i) => ({
+        name: t,
+        color: (item.tag_colors || [])[i] || 'tag-blue'
+      }));
+      renderTagSelector();
+      openModal('itemModal');
+    }
+
+    async function ensureTagsLoaded() {
+      if (allTags.length === 0) {
+        try {
+          allTags = await sbFetch('portfolio_tags?order=name', 'GET', null, false);
+        } catch(e) { allTags = []; }
+      }
+    }
+
+    function updateCategoryOptions() {
+      const section = document.getElementById('fSection').value;
+      const sel = document.getElementById('fCategory');
+      sel.innerHTML = '<option value="">无子分类</option>';
+
+      if (!section) return;
+
+      const cats = allCats.filter(c => c.section === section);
+      if (cats.length === 0) {
+        // 兜底：用预置分类
+        const defaultCats = {
+          graphic:  ['商业评测 · DIY 硬件类','商业评测 · 外设硬件类','游戏体验内容','原创选题 · 科普类文章','原创选题 · 热点资讯 & 品牌专访'],
+          video:    ['评测视频 & 开箱视频','横评项目 & 自主创意视频'],
+          ip:       ['IP 案例'],
+          planning: ['策划方案']
+        };
+        (defaultCats[section] || []).forEach(name => {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          sel.appendChild(opt);
+        });
+      } else {
+        cats.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.name;
+          opt.textContent = (c.icon || '') + ' ' + c.name;
+          sel.appendChild(opt);
+        });
+      }
+    }
+
+    function previewCover() {
+      const url = document.getElementById('fCoverUrl').value.trim();
+      const img = document.getElementById('coverPreviewImg');
+      if (url) {
+        img.src = url;
+        img.classList.add('show');
+        img.onerror = () => img.classList.remove('show');
+      } else {
+        img.classList.remove('show');
+      }
+    }
+
+    function renderTagSelector() {
+      const container = document.getElementById('tagSelector');
+      const predefined = allTags;
+
+      let html = predefined.map(tag => {
+        const isSelected = selectedTags.some(t => t.name === tag.name);
+        return `<span class="tag-option tag ${tag.color} ${isSelected ? 'selected' : ''}"
+          data-name="${escHtml(tag.name)}" data-color="${tag.color}"
+          onclick="toggleTag(this, '${escJs(tag.name)}', '${tag.color}')">
+          ${escHtml(tag.name)}
+        </span>`;
+      }).join('');
+
+      // 已选中的自定义标签（不在预设里的）
+      selectedTags.filter(t => !predefined.find(p => p.name === t.name)).forEach(t => {
+        html += `<span class="tag-option tag ${t.color} selected"
+          data-name="${escHtml(t.name)}" data-color="${t.color}"
+          onclick="toggleTag(this, '${escJs(t.name)}', '${t.color}')">
+          ${escHtml(t.name)} ✕
+        </span>`;
+      });
+
+      container.innerHTML = html || '<span style="color:var(--text-dim);font-size:12px">暂无预设标签，请手动添加</span>';
+    }
+
+    function toggleTag(el, name, color) {
+      const idx = selectedTags.findIndex(t => t.name === name);
+      if (idx >= 0) {
+        selectedTags.splice(idx, 1);
+        el.classList.remove('selected');
+      } else {
+        selectedTags.push({ name, color });
+        el.classList.add('selected');
+      }
+    }
+
+    function addCustomTag() {
+      const name  = document.getElementById('customTagInput').value.trim();
+      const color = document.getElementById('customTagColor').value;
+      if (!name) return showToast('请输入标签名称', 'error');
+      if (selectedTags.find(t => t.name === name)) return showToast('标签已添加', 'info');
+      selectedTags.push({ name, color });
+      document.getElementById('customTagInput').value = '';
+      renderTagSelector();
+    }
+
+    async function saveItem() {
+      const btn = document.getElementById('saveItemBtn');
+      const title   = document.getElementById('fTitle').value.trim();
+      const section = document.getElementById('fSection').value;
+      if (!title) return showToast('请填写作品标题', 'error');
+      if (!section) return showToast('请选择所属版块', 'error');
+
+      const payload = {
+        title,
+        section,
+        link:       document.getElementById('fLink').value.trim() || null,
+        cover_url:  document.getElementById('fCoverUrl').value.trim() || null,
+        category:   document.getElementById('fCategory').value || null,
+        tags:       selectedTags.map(t => t.name),
+        tag_colors: selectedTags.map(t => t.color),
+        sort_order: parseInt(document.getElementById('fOrder').value) || 0,
+        is_visible: document.getElementById('fVisible').value === 'true'
+      };
+
+      btn.disabled = true;
+      btn.textContent = '保存中...';
+
+      try {
+        const editId = document.getElementById('editId').value;
+        if (editId) {
+          await sbFetch(`portfolio_items?id=eq.${editId}`, 'PATCH', payload);
+          showToast('作品已更新', 'success');
+        } else {
+          await sbFetch('portfolio_items', 'POST', payload);
+          showToast('作品已添加', 'success');
+        }
+        closeModal('itemModal');
+        loadItems(currentView === 'dashboard' ? 'all' : currentView);
+      } catch(e) {
+        showToast('保存失败：' + e.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '保存';
+      }
+    }
+
+    // ====================================================
+    //  删除作品
+    // ====================================================
+    function openDeleteModal(id, title) {
+      deleteTargetId = id;
+      document.getElementById('deleteItemTitle').textContent = title;
+      openModal('deleteModal');
+    }
+
+    async function confirmDelete() {
+      if (!deleteTargetId) return;
+      try {
+        await sbFetch(`portfolio_items?id=eq.${deleteTargetId}`, 'DELETE');
+        showToast('已删除', 'success');
+        closeModal('deleteModal');
+        loadItems(currentView === 'dashboard' ? 'all' : currentView);
+      } catch(e) {
+        showToast('删除失败：' + e.message, 'error');
+      }
+    }
+
+    // ====================================================
+    //  显示/隐藏切换
+    // ====================================================
+    async function toggleVisibility(id, newVal) {
+      try {
+        await sbFetch(`portfolio_items?id=eq.${id}`, 'PATCH', { is_visible: newVal });
+        const item = allItems.find(i => i.id === id);
+        if (item) item.is_visible = newVal;
+        const btn = document.querySelector(`tr[data-id="${id}"] .visibility-toggle`);
+        if (btn) btn.classList.toggle('on', newVal);
+        showToast(newVal ? '已显示' : '已隐藏', 'success');
+      } catch(e) {
+        showToast('操作失败：' + e.message, 'error');
+      }
+    }
+
+    // ====================================================
+    //  标签管理
+    // ====================================================
+    function openAddTagModal() {
+      document.getElementById('tagName').value = '';
+      openModal('tagModal');
+    }
+
+    async function saveTag() {
+      const name  = document.getElementById('tagName').value.trim();
+      const color = document.getElementById('tagColor').value;
+      if (!name) return showToast('请输入标签名称', 'error');
+      try {
+        await sbFetch('portfolio_tags', 'POST', { name, color });
+        showToast('标签已添加', 'success');
+        closeModal('tagModal');
+        loadTags();
+      } catch(e) {
+        showToast('添加失败：' + e.message, 'error');
+      }
+    }
+
+    async function deleteTag(id, name) {
+      if (!confirm(`确定删除标签「${name}」吗？`)) return;
+      try {
+        await sbFetch(`portfolio_tags?id=eq.${id}`, 'DELETE');
+        showToast('标签已删除', 'success');
+        allTags = allTags.filter(t => t.id !== id);
+        renderTagsGrid();
+      } catch(e) {
+        showToast('删除失败：' + e.message, 'error');
+      }
+    }
+
+    // ====================================================
+    //  Modal 工具
+    // ====================================================
+    function openModal(id) {
+      document.getElementById(id).classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('show');
+      document.body.style.overflow = '';
+    }
+    // 点击遮罩关闭
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', e => {
+        if (e.target === overlay) closeModal(overlay.id);
+      });
+    });
+    // ESC 关闭
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.show').forEach(m => closeModal(m.id));
+      }
+    });
+
+    // ====================================================
+    //  Toast
+    // ====================================================
+    function showToast(msg, type = 'info') {
+      const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+      const el = document.createElement('div');
+      el.className = `toast ${type}`;
+      el.innerHTML = `<span>${icons[type]}</span><span>${escHtml(msg)}</span>`;
+      document.getElementById('toastContainer').appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateX(20px)';
+        el.style.transition = 'all 0.3s';
+        setTimeout(() => el.remove(), 300);
+      }, 3000);
+    }
+
+    // ====================================================
+    //  工具函数
+    // ====================================================
+    function escHtml(str) {
+      return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function escJs(str) {
+      return String(str || '').replace(/'/g,"\\'").replace(/\\/g,'\\\\');
+    }
+    function formatDate(iso) {
+      if (!iso) return '-';
+      return new Date(iso).toLocaleDateString('zh-CN', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+    }
+
+    // ====================================================
+    //  初始化
+    // ====================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      loadDashboard();
+      // 预加载分类
+      sbFetch('portfolio_categories?order=section,sort_order', 'GET', null, false)
+        .then(cats => { allCats = cats || []; })
+        .catch(() => {});
+    });
+  </script>
+</body>
+</html>
