@@ -183,7 +183,20 @@
     <div class="login-footer">仅限管理员访问</div>
   </div>
 
-  <script src="config.js"></script>
+  <script>
+    // Supabase 配置（内嵌，无需外部 config.js）
+    const SUPABASE_CONFIG = {
+      url: 'https://zgyhnlsfyytjunktsefz.supabase.co',
+      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpneWhubHNmeXl0anVua3RzZWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2MjAxMDcsImV4cCI6MjA5MzE5NjEwN30.pI6mtuWh9AY_sHQB836urNxc8oLVi1ZE2hQ2LYrmfMM',
+      serviceKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpneWhubHNmeXl0anVua3RzZWZ6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NzYyMDEwNywiZXhwIjoyMDkzMTk2MTA3fQ.PMipvNvWuVgK_KHw_bHXEn65cC1XHYGjLIbki9Qko2Q'
+    };
+
+    // 管理员登录凭据
+    const ADMIN_CONFIG = {
+      username: 'admin',
+      password: 'chenyihan2024!'
+    };
+  </script>
   <script>
     // 检查是否已登录
     if (sessionStorage.getItem('admin_logged_in') === 'true') {
