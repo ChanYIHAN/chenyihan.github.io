@@ -18,12 +18,13 @@ chenyihan.github.io
   - 
 项目结构（精简版）
   chenyihan.github.io/
-    ├── index.html              # 主页面（个人信息+作品集入口）
-    ├── portfolio-loader.js     # 动态加载与降级逻辑
-    ├── covers/                 # 项目封面资源
-    ├── portfolio_pages/        # 项目详情页
-    ├── supabase/               # Supabase配置（可选启用）
-    └── 基础配置文件（.gitattributes/.gitignore）
+
+      ├── index.html              # 主页面（个人信息+作品集入口）
+      ├── portfolio-loader.js     # 动态加载与降级逻
+      ├── covers/                 # 项目封面资源
+      ├── portfolio_pages/        # 项目详情页
+      ├── supabase/               # Supabase配置（可选启用）
+      └── 基础配置文件（.gitattributes/.gitignore）
     
 部署说明（快速上手）
   1. Fork本项目至个人GitHub账号
