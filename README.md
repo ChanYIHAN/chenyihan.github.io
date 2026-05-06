@@ -5,10 +5,10 @@ chenyihan.github.io
   基于GitHub Pages搭建的个人展示站点，用于求职场景下，快速向面试官呈现个人技术栈、项目经验及个人信息，支持静态部署，可快速访问。
   
 核心技术栈
-  - 前端：HTML（93.2%）、JavaScript（3.0%）
+  - 前端：HTML（92.1%）、JavaScript（4.2%）
   - 后端辅助：Supabase（CMS管理、数据加载）
   - 部署：GitHub Pages（免费、稳定）
-  - 数据库相关：PLpgSQL（3.8%）
+  - 数据库相关：PLpgSQL（3.7%）
     
 核心功能（求职重点）
   - 个人信息展示：简洁呈现个人简介、技能、经历，适配求职场景
