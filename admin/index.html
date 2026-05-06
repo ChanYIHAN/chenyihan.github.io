@@ -904,6 +904,11 @@
             <input type="text" id="fTitle" placeholder="输入作品标题" required>
           </div>
 
+          <div class="form-group full" id="descGroup">
+            <label>副标题 / 简介 <span style="color:var(--text-dim);font-weight:400;font-size:11px">（策划方案卡片副标题，如：传播策略 / 传播主题）</span></label>
+            <input type="text" id="fDescription" placeholder="输入副标题（可选）">
+          </div>
+
           <div class="form-group full">
             <label>作品链接</label>
             <input type="url" id="fLink" placeholder="https://...">
@@ -1261,6 +1266,7 @@
           <td>
             <div class="item-title" title="${escHtml(item.title)}">${escHtml(item.title)}</div>
             ${item.link ? `<a class="item-link" href="${escHtml(item.link)}" target="_blank" title="${escHtml(item.link)}">↗ ${escHtml(item.link)}</a>` : ''}
+            ${item.description ? `<div style="font-size:11px;color:var(--text-muted);margin-top:4px" title="${escHtml(item.description)}">${escHtml(item.description)}</div>` : ''}
           </td>
           <td>${sectionBadge}${catText}</td>
           <td><div style="max-width:200px">${tags || '<span style="color:var(--text-dim);font-size:12px">无标签</span>'}</div></td>
@@ -1371,6 +1377,7 @@
       document.getElementById('modalTitle').textContent = '编辑作品';
       document.getElementById('editId').value = id;
       document.getElementById('fTitle').value = item.title || '';
+      document.getElementById('fDescription').value = item.description || '';
       document.getElementById('fLink').value = item.link || '';
       document.getElementById('fSection').value = item.section || '';
       document.getElementById('fCoverUrl').value = item.cover_url || '';
@@ -1509,6 +1516,7 @@
       const payload = {
         title,
         section,
+        description: document.getElementById('fDescription').value.trim() || null,
         link:       document.getElementById('fLink').value.trim() || null,
         cover_url:  document.getElementById('fCoverUrl').value.trim() || null,
         category:   document.getElementById('fCategory').value || null,

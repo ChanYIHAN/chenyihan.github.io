@@ -54,7 +54,7 @@ const PORTFOLIO_CONFIG = {
     return g;
   }
 
-  /* ── 渲染单个版块 ── */
+  /* ── 渲染单个版块（图文/视频）── */
   async function renderSection(sectionId, sectionType) {
     const container = document.getElementById(sectionId);
     if (!container) return;
@@ -96,9 +96,58 @@ const PORTFOLIO_CONFIG = {
     }
   }
 
-  // 并行加载图文和视频版块
+  /* ── 渲染策划方案版块 ── */
+  async function renderPlanningSection() {
+    const container = document.getElementById('planning-grid');
+    if (!container) return;
+
+    try {
+      const items = await fetchItems('planning');
+
+      // 无数据 → 保留原有静态内容
+      if (!items || items.length === 0) {
+        console.log('[portfolio-loader] planning: 无动态数据，保留静态内容');
+        return;
+      }
+
+      // 有数据 → 渲染动态卡片
+      container.innerHTML = items.map(item => {
+        const cover = item.cover_url
+          ? `<img src="${escHtml(item.cover_url)}" alt="${escHtml(item.title)}" loading="lazy">`
+          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#4a4d61;font-size:32px">🖼️</div>`;
+        const desc = item.description
+          ? `<div class="plan-desc">${escHtml(item.description)}</div>`
+          : '';
+        const tags = item.tags && item.tags.length > 0
+          ? `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">${renderTags(item.tags, item.tag_colors)}</div>`
+          : '';
+
+        return `
+          <div class="plan-card" onclick='openPlanLightbox(${JSON.stringify({
+            cover_url: item.cover_url,
+            link: item.link,
+            title: item.title,
+            description: item.description
+          })})'>
+            <div class="plan-cover">${cover}</div>
+            <div class="plan-body">
+              <div class="plan-title">${escHtml(item.title)}</div>
+              ${desc}
+              ${tags}
+            </div>
+          </div>`;
+      }).join('');
+
+      console.log(`[portfolio-loader] planning: 已加载 ${items.length} 条动态数据`);
+    } catch (err) {
+      console.warn('[portfolio-loader] planning 加载异常，保留静态内容:', err);
+    }
+  }
+
+  // 并行加载图文、视频和策划方案
   await Promise.allSettled([
-    renderSection('graphic', 'graphic'),
-    renderSection('video',   'video'),
+    renderSection('graphic',  'graphic'),
+    renderSection('video',    'video'),
+    renderPlanningSection(),
   ]);
 })();

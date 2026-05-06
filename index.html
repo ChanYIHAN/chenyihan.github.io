@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -652,6 +652,81 @@
     font-size: 11px;
     color: var(--text2);
     margin-top: 5px;
+  }
+  .plan-desc {
+    font-size: 11px;
+    color: var(--text2);
+    margin-top: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ── PLANNING LIGHTBOX ── */
+  .plan-lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .plan-lightbox.open { display: flex; }
+  .plan-lb-wrap {
+    position: relative;
+    display: inline-block;
+    max-width: 90vw;
+    max-height: 82vh;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+  }
+  .plan-lb-wrap img {
+    display: block;
+    max-width: 90vw;
+    max-height: 82vh;
+    object-fit: contain;
+  }
+  .plan-lb-link {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    background: rgba(79,156,245,0.9);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s, transform 0.2s;
+    pointer-events: all;
+  }
+  .plan-lb-link:hover {
+    background: rgba(79,156,245,1);
+    transform: translateY(-1px);
+  }
+  .plan-lb-close {
+    position: absolute;
+    top: 16px; right: 20px;
+    font-size: 28px;
+    color: rgba(255,255,255,0.8);
+    cursor: pointer;
+    background: none; border: none;
+    line-height: 1;
+  }
+  .plan-lb-close:hover { color: #fff; }
+  .plan-lb-title {
+    color: rgba(255,255,255,0.85);
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    max-width: 600px;
   }
 
   /* ── LIGHTBOX ── */
@@ -1604,58 +1679,25 @@
       </div>
     </div>
     <p style="font-size:13px;color:var(--text2);margin-bottom:22px;">点击封面可查看策划方案全文。</p>
-    <div class="planning-grid">
-      <div class="plan-card" onclick="openLightbox(23)">
-        <div class="plan-cover">
-          <img src="portfolio_pages/page_23.jpg" alt="">
-        </div>
-        <div class="plan-body">
-          <div class="plan-title">2024 PCGROUP & CJ 展会项目招商方案</div>
-          <div class="plan-sub">传播策略 / 传播主题 / 核心动作</div>
-        </div>
-      </div>
-      <div class="plan-card" onclick="openLightbox(24)">
-        <div class="plan-cover">
-          <img src="portfolio_pages/page_24.jpg" alt="">
-        </div>
-        <div class="plan-body">
-          <div class="plan-title">【天启视界热AI无限】索泰内容共创方案</div>
-          <div class="plan-sub">传播策略 / 传播形式 / 传播话题</div>
-        </div>
-      </div>
-      <div class="plan-card" onclick="openLightbox(25)">
-        <div class="plan-cover">
-          <img src="portfolio_pages/page_25.jpg" alt="">
-        </div>
-        <div class="plan-body">
-          <div class="plan-title">【黑神话·悟空】内容特别企划</div>
-          <div class="plan-sub">传播策略 / 传播主题 / 核心动作</div>
-        </div>
-      </div>
-      <div class="plan-card" onclick="openLightbox(26)">
-        <div class="plan-cover">
-          <img src="portfolio_pages/page_26.jpg" alt="">
-        </div>
-        <div class="plan-body">
-          <div class="plan-title">达尔优 Y25 品牌电竞活动规划</div>
-          <div class="plan-sub">传播策略 / 传播形式 / 传播话题</div>
-        </div>
-      </div>
-      <div class="plan-card" onclick="openLightbox(27)">
-        <div class="plan-cover">
-          <img src="portfolio_pages/page_27.jpg" alt="">
-        </div>
-        <div class="plan-body">
-          <div class="plan-title">七彩虹粉丝沙龙活动方案</div>
-          <div class="plan-sub">传播策略 / 传播形式 / 核心动作</div>
-        </div>
-      </div>
+    <div class="planning-grid" id="planning-grid">
+      <!-- 由 portfolio-loader.js 动态渲染 -->
     </div>
   </section>
 
-</main>
+<!-- PLANNING LIGHTBOX -->
+<div class="plan-lightbox" id="planLightbox" onclick="closePlanLightbox(event)">
+  <button class="plan-lb-close" onclick="closePlanLightbox()">×</button>
+  <div class="plan-lb-wrap">
+    <img id="planLbImg" src="" alt="">
+    <a id="planLbLink" class="plan-lb-link" href="#" target="_blank">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      查看完整策划案
+    </a>
+  </div>
+  <div class="plan-lb-title" id="planLbTitle"></div>
+</div>
 
-<!-- LIGHTBOX -->
+</main>
 <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
   <button class="lb-close" onclick="closeLightbox()">×</button>
   <button class="lb-nav prev" onclick="lbNav(-1,event)">‹</button>
@@ -1728,8 +1770,36 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight') lbNav(1);
   if (e.key === 'Escape') closeLightbox({target: lb});
 });
+
+// Planning lightbox
+let currentPlanItem = null;
+
+function openPlanLightbox(item) {
+  currentPlanItem = item;
+  document.getElementById('planLbImg').src = item.cover_url;
+  document.getElementById('planLbTitle').textContent = item.title || '';
+  const linkEl = document.getElementById('planLbLink');
+  if (item.link) {
+    linkEl.href = item.link;
+    linkEl.style.display = 'flex';
+  } else {
+    linkEl.style.display = 'none';
+  }
+  document.getElementById('planLightbox').classList.add('open');
+}
+
+function closePlanLightbox(e) {
+  if (!e || e.target === document.getElementById('planLightbox') || e.target.classList.contains('plan-lb-close')) {
+    document.getElementById('planLightbox').classList.remove('open');
+  }
+}
+
+document.addEventListener('keydown', e => {
+  const plb = document.getElementById('planLightbox');
+  if (!plb.classList.contains('open')) return;
+  if (e.key === 'Escape') closePlanLightbox({target: plb});
+});
 </script>
 <script src="portfolio-loader.js"></script>
 </body>
 </html>
-
