@@ -14,6 +14,12 @@ const PORTFOLIO_CONFIG = {
 
 (async function initPortfolio() {
   const { supabaseUrl, supabaseAnon } = PORTFOLIO_CONFIG;
+  const localPreviewHosts = new Set(['localhost', '127.0.0.1', '::1']);
+
+  if (localPreviewHosts.has(window.location.hostname)) {
+    console.info('[portfolio-loader] 本地预览模式：跳过 Supabase 动态请求，保留静态作品内容。');
+    return;
+  }
 
   /* ── helpers ── */
   function escHtml(s) {
