@@ -9,7 +9,7 @@
 
 const PORTFOLIO_CONFIG = {
   supabaseUrl:  'https://zgyhnlsfyytjunktsefz.supabase.co',
-  supabaseAnon: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpneWhubHNmeXl0anVua3RzZWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2MjAxMDcsImV4cCI6MjA5MzE5NjEwN30.pI6mtuWh9AY_sHQB836urNxc8oLVi1ZE2hQ2LYrmfMM',
+  supabaseAnon: 'sb_publishable_dGK7GApR2snMW5qtqdC7WQ_i3CvIX33',
 };
 
 (async function initPortfolio() {

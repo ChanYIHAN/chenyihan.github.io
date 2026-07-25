@@ -64,7 +64,8 @@ BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$ language 'plpgsql'
+SET search_path = '';
 
 CREATE TRIGGER update_portfolio_items_updated_at
   BEFORE UPDATE ON portfolio_items
@@ -78,22 +79,98 @@ CREATE TRIGGER update_portfolio_items_updated_at
 ALTER TABLE portfolio_items       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE portfolio_categories  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE portfolio_tags        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE admins                 ENABLE ROW LEVEL SECURITY;
+
+-- Data API 权限：访客只读，已认证管理员可维护内容
+GRANT SELECT ON portfolio_items, portfolio_categories, portfolio_tags TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON portfolio_items, portfolio_categories, portfolio_tags TO authenticated;
+
+DROP POLICY IF EXISTS "Public can read visible portfolio items" ON portfolio_items;
+DROP POLICY IF EXISTS "Public can read categories" ON portfolio_categories;
+DROP POLICY IF EXISTS "Public can read tags" ON portfolio_tags;
 
 -- 前端公开读取（所有可见作品）
 CREATE POLICY "Public can read visible portfolio items"
   ON portfolio_items FOR SELECT
+  TO anon, authenticated
   USING (is_visible = true);
 
 CREATE POLICY "Public can read categories"
   ON portfolio_categories FOR SELECT
+  TO anon, authenticated
   USING (true);
 
 CREATE POLICY "Public can read tags"
   ON portfolio_tags FOR SELECT
+  TO anon, authenticated
   USING (true);
 
--- 管理员完整权限（通过 Service Role Key 操作，无需额外策略）
--- 后台管理使用 service_role key，绕过 RLS
+-- 管理员权限：只信任 Supabase Auth 中不可由用户修改的 app_metadata.role
+DROP POLICY IF EXISTS "Admins can read all portfolio items" ON portfolio_items;
+DROP POLICY IF EXISTS "Admins can insert portfolio items" ON portfolio_items;
+DROP POLICY IF EXISTS "Admins can update portfolio items" ON portfolio_items;
+DROP POLICY IF EXISTS "Admins can delete portfolio items" ON portfolio_items;
+DROP POLICY IF EXISTS "Admins can insert categories" ON portfolio_categories;
+DROP POLICY IF EXISTS "Admins can update categories" ON portfolio_categories;
+DROP POLICY IF EXISTS "Admins can delete categories" ON portfolio_categories;
+DROP POLICY IF EXISTS "Admins can insert tags" ON portfolio_tags;
+DROP POLICY IF EXISTS "Admins can update tags" ON portfolio_tags;
+DROP POLICY IF EXISTS "Admins can delete tags" ON portfolio_tags;
+
+CREATE POLICY "Admins can read all portfolio items"
+  ON portfolio_items FOR SELECT
+  TO authenticated
+  USING (((SELECT auth.jwt()) -> 'app_metadata' ->> 'role') = 'admin');
+
+CREATE POLICY "Admins can insert portfolio items"
+  ON portfolio_items FOR INSERT
+  TO authenticated
+  WITH CHECK (((SELECT auth.jwt()) -> 'app_metadata' ->> 'role') = 'admin');
+
+CREATE POLICY "Admins can update portfolio items"
+  ON portfolio_items FOR UPDATE
+  TO authenticated
+  USING (((SELECT auth.jwt()) -> 'app_metadata' ->> 'role') = 'admin')
+  WITH CHECK (((SELECT auth.jwt()) -> 'app_metadata' ->> 'role') = 'admin');
+
+CREATE POLICY "Admins can delete portfolio items"
+  ON portfolio_items FOR DELETE
+  TO authenticated
+  USING (((SELECT auth.jwt()) -> 'app_metadata' ->> 'role') = 'admin');
+
+CREATE POLICY "Admins can insert categories"
+  ON portfolio_categories FOR INSERT
+  TO authenticated
+  WITH CHECK (((SELECT auth.jwt()) -> 'app_metadata' ->> 'role') = 'admin');
+
+CREATE POLICY "Admins can update categories"
+  ON portfolio_categories FOR UPDATE
+  TO authenticated
+  USING (((SELECT auth.jwt()) -> 'app_metadata' ->> 'role') = 'admin')
+  WITH CHECK (((SELECT auth.jwt()) -> 'app_metadata' ->> 'role') = 'admin');
+
+CREATE POLICY "Admins can delete categories"
+  ON portfolio_categories FOR DELETE
+  TO authenticated
+  USING (((SELECT auth.jwt()) -> 'app_metadata' ->> 'role') = 'admin');
+
+CREATE POLICY "Admins can insert tags"
+  ON portfolio_tags FOR INSERT
+  TO authenticated
+  WITH CHECK (((SELECT auth.jwt()) -> 'app_metadata' ->> 'role') = 'admin');
+
+CREATE POLICY "Admins can update tags"
+  ON portfolio_tags FOR UPDATE
+  TO authenticated
+  USING (((SELECT auth.jwt()) -> 'app_metadata' ->> 'role') = 'admin')
+  WITH CHECK (((SELECT auth.jwt()) -> 'app_metadata' ->> 'role') = 'admin');
+
+CREATE POLICY "Admins can delete tags"
+  ON portfolio_tags FOR DELETE
+  TO authenticated
+  USING (((SELECT auth.jwt()) -> 'app_metadata' ->> 'role') = 'admin');
+
+-- admins 表仅为旧版预留，不通过 Data API 暴露；登录统一使用 Supabase Auth。
 
 -- ============================================================
 -- 预置标签数据
