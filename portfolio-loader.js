@@ -26,6 +26,13 @@ const PORTFOLIO_CONFIG = {
     return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  function optimizedCoverUrl(url) {
+    return String(url || '').replace(
+      /^covers\/(.+?)\.(?:png|jpe?g)$/i,
+      'optimized/covers/$1.webp'
+    );
+  }
+
   async function fetchItems(section) {
     const url = `${supabaseUrl}/rest/v1/portfolio_items?section=eq.${section}&is_visible=eq.true&order=sort_order,created_at`;
     const res = await fetch(url, {
@@ -45,7 +52,7 @@ const PORTFOLIO_CONFIG = {
   function renderCard(item, type) {
     const btn = type === 'video' ? '▶ 观看视频' : '↗ 阅读原文';
     const cover = item.cover_url
-      ? `<img src="${escHtml(item.cover_url)}" alt="${escHtml(item.title)}" loading="lazy">`
+      ? `<img src="${escHtml(optimizedCoverUrl(item.cover_url))}" alt="${escHtml(item.title)}" loading="lazy" decoding="async">`
       : `<div style="width:100%;height:100%;background:#1a1d27;display:flex;align-items:center;justify-content:center;color:#4a4d61;font-size:32px">🖼️</div>`;
     return `<a class="work-card" href="${item.link ? escHtml(item.link) : '#'}" target="${item.link ? '_blank' : '_self'}"><div class="card-cover">${cover}<div class="card-cover-overlay"><span class="open-btn">${btn}</span></div></div><div class="card-body"><div class="card-tags">${renderTags(item.tags, item.tag_colors)}</div><div class="card-title">${escHtml(item.title)}</div></div></a>`;
   }
@@ -119,7 +126,7 @@ const PORTFOLIO_CONFIG = {
       // 有数据 → 渲染动态卡片
       container.innerHTML = items.map(item => {
         const cover = item.cover_url
-          ? `<img src="${escHtml(item.cover_url)}" alt="${escHtml(item.title)}" loading="lazy">`
+          ? `<img src="${escHtml(optimizedCoverUrl(item.cover_url))}" alt="${escHtml(item.title)}" loading="lazy" decoding="async">`
           : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#4a4d61;font-size:32px">🖼️</div>`;
         const desc = item.description
           ? `<div class="plan-desc">${escHtml(item.description)}</div>`
@@ -130,7 +137,7 @@ const PORTFOLIO_CONFIG = {
 
         return `
           <div class="plan-card" onclick='openPlanLightbox(${JSON.stringify({
-            cover_url: item.cover_url,
+            cover_url: optimizedCoverUrl(item.cover_url),
             link: item.link,
             title: item.title,
             description: item.description

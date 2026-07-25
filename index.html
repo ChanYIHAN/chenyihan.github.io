@@ -29,14 +29,49 @@
   html { scroll-behavior: smooth; }
   body {
     font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
-    background:
-      linear-gradient(135deg, rgba(15, 21, 29, 0.96), rgba(10, 13, 18, 0.98) 42%, rgba(15, 12, 18, 0.97)),
-      repeating-linear-gradient(90deg, rgba(255,255,255,0.028) 0 1px, transparent 1px 84px),
-      var(--bg);
+    background: var(--bg);
     color: var(--text);
     display: flex;
     min-height: 100vh;
     overflow-x: hidden;
+  }
+  .background-atmosphere {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    background:
+      linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+    background-size: 72px 72px;
+    -webkit-mask-image: radial-gradient(circle at center, #000 12%, rgba(0,0,0,0.86) 58%, transparent 100%);
+    mask-image: radial-gradient(circle at center, #000 12%, rgba(0,0,0,0.86) 58%, transparent 100%);
+  }
+  .background-atmosphere::before {
+    content: '';
+    position: absolute;
+    inset: -20%;
+    opacity: 0.32;
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,0.15) 0 0.45px, transparent 0.8px),
+      radial-gradient(circle, rgba(79,156,245,0.08) 0 0.5px, transparent 0.9px);
+    background-position: 0 0, 2px 1px;
+    background-size: 4px 4px, 5px 5px;
+    transform: translate3d(var(--noise-x, 0), var(--noise-y, 0), 0);
+  }
+  .background-atmosphere::after {
+    content: '';
+    position: absolute;
+    inset: -14%;
+    opacity: 0.9;
+    background:
+      radial-gradient(circle at 24% 22%, rgba(79,156,245,0.14), transparent 31%),
+      radial-gradient(circle at 80% 58%, rgba(244,114,182,0.095), transparent 28%),
+      radial-gradient(circle at 46% 92%, rgba(34,211,238,0.075), transparent 30%);
+    filter: blur(24px);
+    transform: translate3d(var(--glow-x, 0), var(--glow-y, 0), 0) scale(1.08);
+    will-change: transform;
   }
 
   /* ── SCROLLBAR ── */
@@ -127,6 +162,8 @@
     flex: 1;
     padding: 38px 60px 80px;
     max-width: 1220px;
+    position: relative;
+    z-index: 1;
   }
   @media (max-width: 768px) {
     .sidebar { display: none; }
@@ -318,17 +355,20 @@
     position: absolute;
     width: min(86%, 390px);
     aspect-ratio: 1;
-    border-radius: 46% 54% 52% 48%;
+    border-radius: 50%;
     background:
       linear-gradient(135deg, rgba(34,211,238,0.18), rgba(244,114,182,0.18)),
       rgba(255,255,255,0.035);
     border: 1px solid rgba(255,255,255,0.12);
-    transform: rotate(-8deg);
+    box-shadow:
+      inset 0 0 60px rgba(255,255,255,0.025),
+      0 28px 70px rgba(0,0,0,0.42);
     filter: drop-shadow(0 28px 70px rgba(0,0,0,0.42));
   }
   .ip-hero-img {
     position: relative;
     width: min(100%, 430px);
+    height: auto;
     z-index: 2;
     filter: drop-shadow(0 26px 36px rgba(0,0,0,0.42));
     animation: ipFloat 5.4s ease-in-out infinite;
@@ -696,6 +736,7 @@
   .ip-deco {
     position: absolute;
     z-index: 1;
+    height: auto;
     pointer-events: none;
     user-select: none;
     filter: drop-shadow(0 18px 24px rgba(0,0,0,0.36));
@@ -991,14 +1032,28 @@
     border-radius: 20px;
   }
 
+  .mobile-dock {
+    display: none;
+  }
+
   @media (max-width: 980px) {
+    .hero {
+      display: flex;
+      flex-direction: column;
+    }
+    .hero-shell { order: 1; }
+    .reader-board {
+      order: 2;
+      margin-top: 30px;
+      margin-bottom: 0;
+    }
     .hero-shell {
       grid-template-columns: 1fr;
       gap: 22px;
     }
-    .hero-copy { order: 2; }
+    .hero-copy { order: 1; }
     .hero-visual {
-      order: 1;
+      order: 2;
       min-height: 360px;
     }
     .ip-hero-img { width: min(76vw, 360px); }
@@ -1011,6 +1066,64 @@
     }
   }
   @media (max-width: 720px) {
+    body {
+      padding-bottom: calc(78px + env(safe-area-inset-bottom));
+    }
+    .main {
+      padding-bottom: 42px;
+    }
+    .mobile-dock {
+      position: fixed;
+      left: 50%;
+      bottom: calc(12px + env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      z-index: 300;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(52px, 1fr));
+      width: min(calc(100% - 24px), 430px);
+      padding: 7px;
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 20px;
+      background: rgba(14, 21, 29, 0.86);
+      box-shadow: 0 18px 48px rgba(0,0,0,0.46);
+      backdrop-filter: blur(20px) saturate(1.18);
+      -webkit-backdrop-filter: blur(20px) saturate(1.18);
+    }
+    .mobile-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-height: 48px;
+      border-radius: 14px;
+      color: var(--text2);
+      font-size: 10px;
+      text-decoration: none;
+      transition: color 0.2s, background 0.2s, transform 0.2s;
+    }
+    .mobile-nav-item::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 0 0 currentColor;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .mobile-nav-item.active {
+      color: var(--blue2);
+      background: rgba(79,156,245,0.12);
+    }
+    .mobile-nav-item.active::before {
+      transform: scale(1.12);
+      box-shadow: 0 0 12px currentColor;
+    }
+    .mobile-nav-item:nth-child(2) { --dock-color: var(--blue); }
+    .mobile-nav-item:nth-child(3) { --dock-color: var(--purple); }
+    .mobile-nav-item:nth-child(4) { --dock-color: var(--pink); }
+    .mobile-nav-item:nth-child(5) { --dock-color: var(--green); }
+    .mobile-nav-item:not(:first-child).active { color: var(--dock-color); }
     .reader-board {
       grid-template-columns: 1fr;
       align-items: start;
@@ -1028,11 +1141,40 @@
   }
   @media (max-width: 520px) {
     .hero { padding-top: 10px; }
-    .hero h1 { letter-spacing: 2px; }
-    .hero-visual { min-height: 310px; }
-    .hero-stats { grid-template-columns: 1fr; }
-    .reader-main { font-size: 40px; }
-    .reader-tail { font-size: 32px; }
+    .hero h1 {
+      font-size: clamp(50px, 16vw, 68px);
+      letter-spacing: 2px;
+    }
+    .hero-sub {
+      font-size: 13px;
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+    .hero-meta {
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .meta-chip {
+      padding: 5px 10px;
+      font-size: 11px;
+    }
+    .hero-stats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+      margin-top: 22px;
+    }
+    .stat-item { padding: 11px 12px; }
+    .stat-num { font-size: 26px; }
+    .stat-label { font-size: 10.5px; }
+    .hero-visual {
+      min-height: 300px;
+      margin-top: 4px;
+    }
+    .hero-visual::before {
+      width: min(76vw, 292px);
+    }
+    .ip-hero-img { width: min(76vw, 306px); }
+    .reader-main { font-size: 46px; }
     .reader-board .ip-deco-lounge {
       width: 102px;
       left: 12px;
@@ -1043,7 +1185,8 @@
     html { scroll-behavior: auto; }
     .hero-tag::before,
     .reader-board::before,
-    .ip-hero-img {
+    .ip-hero-img,
+    .background-atmosphere::after {
       animation: none;
     }
     *, *::before, *::after {
@@ -1055,6 +1198,8 @@
 </style>
 </head>
 <body>
+
+<div class="background-atmosphere" aria-hidden="true"></div>
 
 <!-- ── SIDEBAR ── -->
 <nav class="sidebar">
@@ -1089,23 +1234,29 @@
   </div>
 </nav>
 
+<nav class="mobile-dock" aria-label="移动端主要导航">
+  <a class="mobile-nav-item active" href="#resume" onclick="setActive(this)">简历</a>
+  <a class="mobile-nav-item" href="#graphic" onclick="setActive(this)">图文</a>
+  <a class="mobile-nav-item" href="#video" onclick="setActive(this)">视频</a>
+  <a class="mobile-nav-item" href="#ip" onclick="setActive(this)">IP</a>
+  <a class="mobile-nav-item" href="#planning" onclick="setActive(this)">策划</a>
+</nav>
+
 <!-- ── MAIN ── -->
 <main class="main">
 
   <!-- HERO -->
   <section class="hero" id="top">
     <div class="reader-board" aria-label="全网内容阅读量展示">
-      <img class="ip-deco ip-deco-lounge" src="assets/ip/ip-lounge.png" alt="" aria-hidden="true">
+      <img class="ip-deco ip-deco-lounge" src="optimized/assets/ip/ip-lounge.webp" alt="" aria-hidden="true" loading="eager" decoding="async" width="1200" height="600">
       <div>
         <div class="reader-label">All-channel Reach</div>
         <div class="reader-title">全网内容累计阅读量</div>
-        <div class="reader-sub">图文评测、视频脚本、IP 栏目与展会报道持续增长中</div>
+        <div class="reader-sub">截至 2026.07 · 图文评测、视频脚本、IP 栏目与展会报道</div>
       </div>
       <div class="reader-number">
-        <span class="reader-main" id="readerMain">1283</span>
+        <span class="reader-main" id="readerMain">0</span>
         <span class="reader-unit">万</span>
-        <span class="reader-tail" id="readerTail">406</span>
-        <span class="reader-unit">次</span>
       </div>
     </div>
 
@@ -1148,14 +1299,14 @@
         </div>
       </div>
       <div class="hero-visual" aria-hidden="true">
-        <img class="ip-hero-img" src="assets/ip/chenyihan-ip.png" alt="">
+        <img class="ip-hero-img" src="optimized/assets/ip/chenyihan-ip.webp" alt="" loading="eager" decoding="async" fetchpriority="high" width="900" height="1200">
       </div>
     </div>
   </section>
 
   <!-- ══ 个人简历 ══ -->
   <section class="section" id="resume">
-    <img class="ip-deco ip-deco-sit" src="assets/ip/ip-sit.png" alt="" aria-hidden="true">
+    <img class="ip-deco ip-deco-sit" src="optimized/assets/ip/ip-sit.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="900" height="1200">
     <div class="section-header">
       <div class="section-icon" style="background:rgba(79,156,245,0.12);">👤</div>
       <div>
@@ -1257,7 +1408,7 @@
 
   <!-- ══ 图文作品集 ══ -->
   <section class="section" id="graphic">
-    <img class="ip-deco ip-deco-hang" src="assets/ip/ip-hang.png" alt="" aria-hidden="true">
+    <img class="ip-deco ip-deco-hang" src="optimized/assets/ip/ip-hang.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="800" height="1200">
     <div class="section-header">
       <div class="section-icon" style="background:rgba(79,156,245,0.12);">📝</div>
       <div>
@@ -1276,7 +1427,7 @@
       <div class="card-grid">
         <a class="work-card" href="http://diy.pconline.com.cn/2127/21276572.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s06_000.jpg" alt="">
+            <img src="optimized/covers/s06_000.webp" alt="" loading="lazy" decoding="async" width="1280" height="853">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1286,7 +1437,7 @@
         </a>
         <a class="work-card" href="http://diy.pconline.com.cn/2114/21144192.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s06_001.jpg" alt="" style="object-position:center 30%">
+            <img src="optimized/covers/s06_001.webp" alt="" style="object-position:center 30%" loading="lazy" decoding="async" width="1280" height="852">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1296,7 +1447,7 @@
         </a>
         <a class="work-card" href="https://diy.pconline.com.cn/1651/16517324.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s06_002.png" alt="" style="object-position:center 60%">
+            <img src="optimized/covers/s06_002.webp" alt="" style="object-position:center 60%" loading="lazy" decoding="async" width="800" height="532">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1306,7 +1457,7 @@
         </a>
         <a class="work-card" href="http://diy.pconline.com.cn/2123/21238652.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s06_003.jpg" alt="" style="object-position:right top">
+            <img src="optimized/covers/s06_003.webp" alt="" style="object-position:right top" loading="lazy" decoding="async" width="1280" height="490">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1316,7 +1467,7 @@
         </a>
         <a class="work-card" href="http://diy.pconline.com.cn/2025/20251473.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s06_004.jpg" alt="" style="object-position:left 40%">
+            <img src="optimized/covers/s06_004.webp" alt="" style="object-position:left 40%" loading="lazy" decoding="async" width="700" height="467">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1326,7 +1477,7 @@
         </a>
         <a class="work-card" href="https://diy.pconline.com.cn/2119/21193932.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s06_005.jpg" alt="" style="object-position:center 80%">
+            <img src="optimized/covers/s06_005.webp" alt="" style="object-position:center 80%" loading="lazy" decoding="async" width="1280" height="853">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1347,7 +1498,7 @@
       <div class="card-grid">
         <a class="work-card" href="https://acc.pconline.com.cn/1749/17492808.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s07_006.png" alt="">
+            <img src="optimized/covers/s07_006.webp" alt="" loading="lazy" decoding="async" width="1267" height="843">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1357,7 +1508,7 @@
         </a>
         <a class="work-card" href="https://acc.pconline.com.cn/1520/15200914.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s07_007.png" alt="" style="object-position:center 40%">
+            <img src="optimized/covers/s07_007.webp" alt="" style="object-position:center 40%" loading="lazy" decoding="async" width="1280" height="852">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1367,7 +1518,7 @@
         </a>
         <a class="work-card" href="https://acc.pconline.com.cn/1768/17680948.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s07_008.png" alt="" style="object-position:center 70%">
+            <img src="optimized/covers/s07_008.webp" alt="" style="object-position:center 70%" loading="lazy" decoding="async" width="1269" height="844">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1377,7 +1528,7 @@
         </a>
         <a class="work-card" href="https://diy.pconline.com.cn/1749/17495069.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s07_009.png" alt="" style="object-position:right 20%">
+            <img src="optimized/covers/s07_009.webp" alt="" style="object-position:right 20%" loading="lazy" decoding="async" width="1267" height="713">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1387,7 +1538,7 @@
         </a>
         <a class="work-card" href="https://acc.pconline.com.cn/1587/15873604.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s07_010.png" alt="" style="object-position:left 60%">
+            <img src="optimized/covers/s07_010.webp" alt="" style="object-position:left 60%" loading="lazy" decoding="async" width="800" height="532">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1397,7 +1548,7 @@
         </a>
         <a class="work-card" href="https://baijiahao.baidu.com/s?id=1752289876522180811&wfr=spider&for=pc" target="_blank">
           <div class="card-cover">
-            <img src="covers/s07_011.png" alt="" style="object-position:center 90%">
+            <img src="optimized/covers/s07_011.webp" alt="" style="object-position:center 90%" loading="lazy" decoding="async" width="700" height="466">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1418,7 +1569,7 @@
       <div class="card-grid">
         <a class="work-card" href="https://diy.pconline.com.cn/1780/17803168.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s08_012.png" alt="">
+            <img src="optimized/covers/s08_012.webp" alt="" loading="lazy" decoding="async" width="1269" height="714">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1428,7 +1579,7 @@
         </a>
         <a class="work-card" href="https://diy.pconline.com.cn/1617/16174464.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s08_013.png" alt="" style="object-position:center 40%">
+            <img src="optimized/covers/s08_013.webp" alt="" style="object-position:center 40%" loading="lazy" decoding="async" width="690" height="388">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1438,7 +1589,7 @@
         </a>
         <a class="work-card" href="https://diy.pconline.com.cn/1785/17855669.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s08_014.png" alt="" style="object-position:center 70%">
+            <img src="optimized/covers/s08_014.webp" alt="" style="object-position:center 70%" loading="lazy" decoding="async" width="1271" height="635">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1448,7 +1599,7 @@
         </a>
         <a class="work-card" href="https://diy.pconline.com.cn/1683/16839408.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s08_015.png" alt="" style="object-position:right 25%">
+            <img src="optimized/covers/s08_015.webp" alt="" style="object-position:right 25%" loading="lazy" decoding="async" width="800" height="403">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1458,7 +1609,7 @@
         </a>
         <a class="work-card" href="http://diy.pconline.com.cn/2130/21307611.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s08_016.png" alt="" style="object-position:left 55%">
+            <img src="optimized/covers/s08_016.webp" alt="" style="object-position:left 55%" loading="lazy" decoding="async" width="1280" height="720">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1468,7 +1619,7 @@
         </a>
         <a class="work-card" href="https://new.qq.com/rain/a/20240902A02X7S00" target="_blank">
           <div class="card-cover">
-            <img src="covers/s08_017.png" alt="" style="object-position:center 85%">
+            <img src="optimized/covers/s08_017.webp" alt="" style="object-position:center 85%" loading="lazy" decoding="async" width="960" height="540">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1478,7 +1629,7 @@
         </a>
         <a class="work-card" href="https://diy.pconline.com.cn/2136/21361511.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/new_huanta.jpg" alt="">
+            <img src="optimized/covers/new_huanta.webp" alt="" loading="lazy" decoding="async" width="1068" height="540">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1499,7 +1650,7 @@
       <div class="card-grid">
         <a class="work-card" href="https://diy.pconline.com.cn/1740/17404748.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s09_018.png" alt="">
+            <img src="optimized/covers/s09_018.webp" alt="" loading="lazy" decoding="async" width="1280" height="877">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1509,7 +1660,7 @@
         </a>
         <a class="work-card" href="https://diy.pconline.com.cn/1652/16526106.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s09_019.png" alt="" style="object-position:center 40%">
+            <img src="optimized/covers/s09_019.webp" alt="" style="object-position:center 40%" loading="lazy" decoding="async" width="800" height="450">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1519,7 +1670,7 @@
         </a>
         <a class="work-card" href="https://diy.pconline.com.cn/1612/16121731.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s09_020.png" alt="" style="object-position:center 65%">
+            <img src="optimized/covers/s09_020.webp" alt="" style="object-position:center 65%" loading="lazy" decoding="async" width="700" height="466">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1529,7 +1680,7 @@
         </a>
         <a class="work-card" href="https://diy.pconline.com.cn/1566/15667645.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s09_021.png" alt="" style="object-position:right 30%">
+            <img src="optimized/covers/s09_021.webp" alt="" style="object-position:right 30%" loading="lazy" decoding="async" width="700" height="466">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1539,7 +1690,7 @@
         </a>
         <a class="work-card" href="https://diy.pconline.com.cn/1771/17710808.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s09_022.png" alt="" style="object-position:left 55%">
+            <img src="optimized/covers/s09_022.webp" alt="" style="object-position:left 55%" loading="lazy" decoding="async" width="1280" height="721">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1549,7 +1700,7 @@
         </a>
         <a class="work-card" href="https://diy.pconline.com.cn/1773/17738648.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s09_023.png" alt="" style="object-position:center 85%">
+            <img src="optimized/covers/s09_023.webp" alt="" style="object-position:center 85%" loading="lazy" decoding="async" width="1200" height="675">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1570,7 +1721,7 @@
       <div class="card-grid">
         <a class="work-card" href="https://ces.pconline.com.cn/1700/17000188.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s10_024.png" alt="">
+            <img src="optimized/covers/s10_024.webp" alt="" loading="lazy" decoding="async" width="800" height="420">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1580,7 +1731,7 @@
         </a>
         <a class="work-card" href="https://diy.pconline.com.cn/1753/17536997.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s10_025.png" alt="" style="object-position:center 40%">
+            <img src="optimized/covers/s10_025.webp" alt="" style="object-position:center 40%" loading="lazy" decoding="async" width="1267" height="951">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1590,7 +1741,7 @@
         </a>
         <a class="work-card" href="https://diy.pconline.com.cn/1722/17227689.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s10_026.png" alt="" style="object-position:center 65%">
+            <img src="optimized/covers/s10_026.webp" alt="" style="object-position:center 65%" loading="lazy" decoding="async" width="1269" height="952">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1600,7 +1751,7 @@
         </a>
         <a class="work-card" href="https://diy.pconline.com.cn/1664/16644024.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s10_027.png" alt="" style="object-position:right 30%">
+            <img src="optimized/covers/s10_027.webp" alt="" style="object-position:right 30%" loading="lazy" decoding="async" width="800" height="533">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1610,7 +1761,7 @@
         </a>
         <a class="work-card" href="https://diy.pconline.com.cn/1724/17244168.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s10_028.png" alt="" style="object-position:left 55%">
+            <img src="optimized/covers/s10_028.webp" alt="" style="object-position:left 55%" loading="lazy" decoding="async" width="1267" height="845">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1620,7 +1771,7 @@
         </a>
         <a class="work-card" href="https://baijiahao.baidu.com/s?id=1762209659177659212&wfr=spider&for=pc" target="_blank">
           <div class="card-cover">
-            <img src="covers/s10_029.png" alt="" style="object-position:center 85%">
+            <img src="optimized/covers/s10_029.webp" alt="" style="object-position:center 85%" loading="lazy" decoding="async" width="640" height="360">
             <div class="card-cover-overlay"><span class="open-btn">↗ 阅读原文</span></div>
           </div>
           <div class="card-body">
@@ -1634,7 +1785,7 @@
 
   <!-- ══ 视频作品集 ══ -->
   <section class="section" id="video">
-    <img class="ip-deco ip-deco-stand" src="assets/ip/ip-stand.png" alt="" aria-hidden="true">
+    <img class="ip-deco ip-deco-stand" src="optimized/assets/ip/ip-stand.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="800" height="1200">
     <div class="section-header">
       <div class="section-icon" style="background:rgba(167,139,250,0.12);">🎬</div>
       <div>
@@ -1653,7 +1804,7 @@
       <div class="card-grid">
         <a class="work-card" href="https://pconline.pcvideo.com.cn/video-36807.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/new_rtxpro.png" alt="">
+            <img src="optimized/covers/new_rtxpro.webp" alt="" loading="lazy" decoding="async" width="1280" height="600">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1663,7 +1814,7 @@
         </a>
         <a class="work-card" href="https://www.bilibili.com/video/BV1zRXsBTEYN/" target="_blank">
           <div class="card-cover">
-            <img src="covers/s12_030.jpg" alt="">
+            <img src="optimized/covers/s12_030.webp" alt="" loading="lazy" decoding="async" width="672" height="378">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1673,7 +1824,7 @@
         </a>
         <a class="work-card" href="https://www.bilibili.com/video/BV1TNmEBUEp1/" target="_blank">
           <div class="card-cover">
-            <img src="covers/s12_031.jpg" alt="" style="object-position:center 40%">
+            <img src="optimized/covers/s12_031.webp" alt="" style="object-position:center 40%" loading="lazy" decoding="async" width="672" height="378">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1683,7 +1834,7 @@
         </a>
         <a class="work-card" href="https://www.bilibili.com/video/BV1kan2z6ERh/" target="_blank">
           <div class="card-cover">
-            <img src="covers/s12_032.jpg" alt="" style="object-position:center 70%">
+            <img src="optimized/covers/s12_032.webp" alt="" style="object-position:center 70%" loading="lazy" decoding="async" width="672" height="378">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1693,7 +1844,7 @@
         </a>
         <a class="work-card" href="https://www.bilibili.com/video/BV1WbeMzNEyd/" target="_blank">
           <div class="card-cover">
-            <img src="covers/s12_033.jpg" alt="" style="object-position:right 20%">
+            <img src="optimized/covers/s12_033.webp" alt="" style="object-position:right 20%" loading="lazy" decoding="async" width="672" height="378">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1703,7 +1854,7 @@
         </a>
         <a class="work-card" href="https://www.bilibili.com/video/BV11sKHzTEP9/" target="_blank">
           <div class="card-cover">
-            <img src="covers/s13_034.jpg" alt="">
+            <img src="optimized/covers/s13_034.webp" alt="" loading="lazy" decoding="async" width="672" height="378">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1713,7 +1864,7 @@
         </a>
         <a class="work-card" href="https://pconline.pcvideo.com.cn/video-32340.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s13_036.png" alt="" style="object-position:center 65%">
+            <img src="optimized/covers/s13_036.webp" alt="" style="object-position:center 65%" loading="lazy" decoding="async" width="1279" height="715">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1723,7 +1874,7 @@
         </a>
         <a class="work-card" href="https://pconline.pcvideo.com.cn/video-32214.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s13_035.png" alt="" style="object-position:center 40%">
+            <img src="optimized/covers/s13_035.webp" alt="" style="object-position:center 40%" loading="lazy" decoding="async" width="1280" height="797">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1733,7 +1884,7 @@
         </a>
         <a class="work-card" href="https://pconline.pcvideo.com.cn/video-32113.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s13_037.png" alt="" style="object-position:right 30%">
+            <img src="optimized/covers/s13_037.webp" alt="" style="object-position:right 30%" loading="lazy" decoding="async" width="1277" height="718">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1743,7 +1894,7 @@
         </a>
         <a class="work-card" href="https://www.bilibili.com/video/BV1C2t3zZEgT/" target="_blank">
           <div class="card-cover">
-            <img src="covers/s14_038.jpg" alt="">
+            <img src="optimized/covers/s14_038.webp" alt="" loading="lazy" decoding="async" width="672" height="378">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1753,7 +1904,7 @@
         </a>
         <a class="work-card" href="https://pconline.pcvideo.com.cn/video-33777.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s14_039.png" alt="">
+            <img src="optimized/covers/s14_039.webp" alt="" loading="lazy" decoding="async" width="1280" height="720">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1763,7 +1914,7 @@
         </a>
         <a class="work-card" href="https://pconline.pcvideo.com.cn/video-33765.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s14_040.png" alt="" style="object-position:center 65%">
+            <img src="optimized/covers/s14_040.webp" alt="" style="object-position:center 65%" loading="lazy" decoding="async" width="1280" height="720">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1773,7 +1924,7 @@
         </a>
         <a class="work-card" href="https://pconline.pcvideo.com.cn/video-33552.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s14_041.png" alt="" style="object-position:right 30%">
+            <img src="optimized/covers/s14_041.webp" alt="" style="object-position:right 30%" loading="lazy" decoding="async" width="1280" height="720">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1794,7 +1945,7 @@
       <div class="card-grid">
         <a class="work-card" href="https://pconline.pcvideo.com.cn/video-32015.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s15_042.png" alt="">
+            <img src="optimized/covers/s15_042.webp" alt="" loading="lazy" decoding="async" width="1280" height="720">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1804,7 +1955,7 @@
         </a>
         <a class="work-card" href="https://pconline.pcvideo.com.cn/video-32058.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s16_051.png" alt="" style="object-position:center 40%">
+            <img src="optimized/covers/s16_051.webp" alt="" style="object-position:center 40%" loading="lazy" decoding="async" width="1280" height="720">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1814,7 +1965,7 @@
         </a>
         <a class="work-card" href="https://pconline.pcvideo.com.cn/video-31098.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s16_056.png" alt="" style="object-position:center 65%">
+            <img src="optimized/covers/s16_056.webp" alt="" style="object-position:center 65%" loading="lazy" decoding="async" width="1280" height="720">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1824,7 +1975,7 @@
         </a>
         <a class="work-card" href="https://pconline.pcvideo.com.cn/video-32203.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s16_046.png" alt="" style="object-position:right 25%">
+            <img src="optimized/covers/s16_046.webp" alt="" style="object-position:right 25%" loading="lazy" decoding="async" width="1280" height="720">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1834,7 +1985,7 @@
         </a>
         <a class="work-card" href="https://pconline.pcvideo.com.cn/video-32015.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s15_042.png" alt="">
+            <img src="optimized/covers/s15_042.webp" alt="" loading="lazy" decoding="async" width="1280" height="720">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1844,7 +1995,7 @@
         </a>
         <a class="work-card" href="https://pconline.pcvideo.com.cn/video-31904.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s15_043.png" alt="" style="object-position:center 50%">
+            <img src="optimized/covers/s15_043.webp" alt="" style="object-position:center 50%" loading="lazy" decoding="async" width="1152" height="720">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1854,7 +2005,7 @@
         </a>
         <a class="work-card" href="https://pconline.pcvideo.com.cn/video-31129.html" target="_blank">
           <div class="card-cover">
-            <img src="covers/s15_044.png" alt="" style="object-position:center 80%">
+            <img src="optimized/covers/s15_044.webp" alt="" style="object-position:center 80%" loading="lazy" decoding="async" width="1151" height="720">
             <div class="card-cover-overlay"><span class="open-btn">▶ 观看视频</span></div>
           </div>
           <div class="card-body">
@@ -1868,7 +2019,7 @@
 
   <!-- ══ IP 案例 ══ -->
   <section class="section" id="ip">
-    <img class="ip-deco ip-deco-lean" src="assets/ip/ip-lean.png" alt="" aria-hidden="true">
+    <img class="ip-deco ip-deco-lean" src="optimized/assets/ip/ip-lean.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="569" height="1200">
     <div class="section-header">
       <div class="section-icon" style="background:rgba(244,114,182,0.12);">✨</div>
       <div>
@@ -1965,7 +2116,7 @@
 
   <!-- ══ 策划相关 ══ -->
   <section class="section" id="planning">
-    <img class="ip-deco ip-deco-offer" src="assets/ip/ip-offer.png" alt="" aria-hidden="true">
+    <img class="ip-deco ip-deco-offer" src="optimized/assets/ip/ip-offer.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="900" height="1200">
     <div class="section-header">
       <div class="section-icon" style="background:rgba(52,211,153,0.12);">📋</div>
       <div>
@@ -1975,56 +2126,56 @@
     </div>
     <p style="font-size:13px;color:var(--text2);margin-bottom:22px;">点击封面可查看策划方案全文。</p>
     <div class="planning-grid" id="planning-grid">
-      <div class="plan-card" onclick="openPlanLightbox({cover_url:'covers/ppt_s15_042_v1.png', title:'17 张 30&40 系显卡 AI 性能横评策划', description:'围绕 AI 绘图、视频生成与本地推理能力搭建横评框架。'})">
-        <div class="plan-cover"><img src="covers/ppt_s15_042_v1.png" alt="17 张 30&40 系显卡 AI 性能横评策划" loading="lazy"></div>
+      <div class="plan-card" onclick="openPlanLightbox({cover_url:'optimized/covers/ppt_s15_042_v1.webp', title:'17 张 30&40 系显卡 AI 性能横评策划', description:'围绕 AI 绘图、视频生成与本地推理能力搭建横评框架。'})">
+        <div class="plan-cover"><img src="optimized/covers/ppt_s15_042_v1.webp" alt="17 张 30&40 系显卡 AI 性能横评策划" loading="lazy" decoding="async" width="1280" height="720"></div>
         <div class="plan-body">
           <div class="plan-title">17 张 30&40 系显卡 AI 性能横评策划</div>
           <div class="plan-desc">测试维度、内容节奏与平台分发方案</div>
           <div class="card-tags"><span class="tag tag-purple">横评</span><span class="tag tag-amber">AI</span></div>
         </div>
       </div>
-      <div class="plan-card" onclick="openPlanLightbox({cover_url:'covers/ppt_s16_056_v3.png', title:'5 款 50 系 N 卡本地 AI 性能横评策划', description:'把 AI 问答、AI 画图、AI 视频三类任务拆解成可视化内容。'})">
-        <div class="plan-cover"><img src="covers/ppt_s16_056_v3.png" alt="5 款 50 系 N 卡本地 AI 性能横评策划" loading="lazy"></div>
+      <div class="plan-card" onclick="openPlanLightbox({cover_url:'optimized/covers/ppt_s16_056_v3.webp', title:'5 款 50 系 N 卡本地 AI 性能横评策划', description:'把 AI 问答、AI 画图、AI 视频三类任务拆解成可视化内容。'})">
+        <div class="plan-cover"><img src="optimized/covers/ppt_s16_056_v3.webp" alt="5 款 50 系 N 卡本地 AI 性能横评策划" loading="lazy" decoding="async" width="1280" height="720"></div>
         <div class="plan-body">
           <div class="plan-title">5 款 50 系 N 卡本地 AI 性能横评策划</div>
           <div class="plan-desc">选题逻辑、脚本结构与测试路径</div>
           <div class="card-tags"><span class="tag tag-purple">横评</span><span class="tag tag-amber">AIGC</span></div>
         </div>
       </div>
-      <div class="plan-card" onclick="openPlanLightbox({cover_url:'covers/ppt_s16_051_v2.png', title:'微星 MPG CORELIQUID P13 水冷开箱策划', description:'从新品卖点、镜头脚本到口播节奏的短视频方案。'})">
-        <div class="plan-cover"><img src="covers/ppt_s16_051_v2.png" alt="微星 MPG CORELIQUID P13 水冷开箱策划" loading="lazy"></div>
+      <div class="plan-card" onclick="openPlanLightbox({cover_url:'optimized/covers/ppt_s16_051_v2.webp', title:'微星 MPG CORELIQUID P13 水冷开箱策划', description:'从新品卖点、镜头脚本到口播节奏的短视频方案。'})">
+        <div class="plan-cover"><img src="optimized/covers/ppt_s16_051_v2.webp" alt="微星 MPG CORELIQUID P13 水冷开箱策划" loading="lazy" decoding="async" width="1152" height="720"></div>
         <div class="plan-body">
           <div class="plan-title">微星 MPG CORELIQUID P13 水冷开箱策划</div>
           <div class="plan-desc">新品开箱、卖点提炼与镜头表达</div>
           <div class="card-tags"><span class="tag tag-blue">开箱</span><span class="tag tag-teal">散热</span></div>
         </div>
       </div>
-      <div class="plan-card" onclick="openPlanLightbox({cover_url:'covers/ppt_s16_046_v4.png', title:'TCOMAS 钛钽机电散装机内容策划', description:'结合硬件结构、装机过程与商业传播目标进行内容包装。'})">
-        <div class="plan-cover"><img src="covers/ppt_s16_046_v4.png" alt="TCOMAS 钛钽机电散装机内容策划" loading="lazy"></div>
+      <div class="plan-card" onclick="openPlanLightbox({cover_url:'optimized/covers/ppt_s16_046_v4.webp', title:'TCOMAS 钛钽机电散装机内容策划', description:'结合硬件结构、装机过程与商业传播目标进行内容包装。'})">
+        <div class="plan-cover"><img src="optimized/covers/ppt_s16_046_v4.webp" alt="TCOMAS 钛钽机电散装机内容策划" loading="lazy" decoding="async" width="1151" height="720"></div>
         <div class="plan-body">
           <div class="plan-title">TCOMAS 钛钽机电散装机内容策划</div>
           <div class="plan-desc">产品卖点、拍摄清单与交付节奏</div>
           <div class="card-tags"><span class="tag tag-blue">装机</span><span class="tag tag-green">品牌合作</span></div>
         </div>
       </div>
-      <div class="plan-card" onclick="openPlanLightbox({cover_url:'covers/ppt_s15_043_v6.png', title:'横评项目视频化执行方案', description:'将硬件测试数据转译成适合 B 站与短视频平台的表达结构。'})">
-        <div class="plan-cover"><img src="covers/ppt_s15_043_v6.png" alt="横评项目视频化执行方案" loading="lazy"></div>
+      <div class="plan-card" onclick="openPlanLightbox({cover_url:'optimized/covers/ppt_s15_043_v6.webp', title:'横评项目视频化执行方案', description:'将硬件测试数据转译成适合 B 站与短视频平台的表达结构。'})">
+        <div class="plan-cover"><img src="optimized/covers/ppt_s15_043_v6.webp" alt="横评项目视频化执行方案" loading="lazy" decoding="async" width="1280" height="720"></div>
         <div class="plan-body">
           <div class="plan-title">横评项目视频化执行方案</div>
           <div class="plan-desc">数据呈现、脚本设计与视觉包装</div>
           <div class="card-tags"><span class="tag tag-purple">视频</span><span class="tag tag-teal">执行</span></div>
         </div>
       </div>
-      <div class="plan-card" onclick="openPlanLightbox({cover_url:'covers/ppt_s15_044_v7.png', title:'创意视频栏目内容策划', description:'围绕 DIY 硬件受众兴趣设计更轻量、更好传播的内容栏目。'})">
-        <div class="plan-cover"><img src="covers/ppt_s15_044_v7.png" alt="创意视频栏目内容策划" loading="lazy"></div>
+      <div class="plan-card" onclick="openPlanLightbox({cover_url:'optimized/covers/ppt_s15_044_v7.webp', title:'创意视频栏目内容策划', description:'围绕 DIY 硬件受众兴趣设计更轻量、更好传播的内容栏目。'})">
+        <div class="plan-cover"><img src="optimized/covers/ppt_s15_044_v7.webp" alt="创意视频栏目内容策划" loading="lazy" decoding="async" width="1280" height="720"></div>
         <div class="plan-body">
           <div class="plan-title">创意视频栏目内容策划</div>
           <div class="plan-desc">栏目定位、内容人设与选题机制</div>
           <div class="card-tags"><span class="tag tag-pink">创意</span><span class="tag tag-amber">栏目</span></div>
         </div>
       </div>
-      <div class="plan-card" onclick="openPlanLightbox({cover_url:'covers/ppt_s15_042_v5.png', title:'AI 显卡横评项目复盘方案', description:'沉淀横评项目的测试方法、内容结构与商业交付经验。'})">
-        <div class="plan-cover"><img src="covers/ppt_s15_042_v5.png" alt="AI 显卡横评项目复盘方案" loading="lazy"></div>
+      <div class="plan-card" onclick="openPlanLightbox({cover_url:'optimized/covers/ppt_s15_042_v5.webp', title:'AI 显卡横评项目复盘方案', description:'沉淀横评项目的测试方法、内容结构与商业交付经验。'})">
+        <div class="plan-cover"><img src="optimized/covers/ppt_s15_042_v5.webp" alt="AI 显卡横评项目复盘方案" loading="lazy" decoding="async" width="881" height="495"></div>
         <div class="plan-body">
           <div class="plan-title">AI 显卡横评项目复盘方案</div>
           <div class="plan-desc">测试流程、传播表现与复用模板</div>
@@ -2038,7 +2189,7 @@
 <div class="plan-lightbox" id="planLightbox" onclick="closePlanLightbox(event)">
   <button class="plan-lb-close" onclick="closePlanLightbox()">×</button>
   <div class="plan-lb-wrap">
-    <img id="planLbImg" src="" alt="">
+    <img id="planLbImg" src="" alt="" decoding="async">
     <a id="planLbLink" class="plan-lb-link" href="#" target="_blank">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
       查看完整策划案
@@ -2051,57 +2202,91 @@
 <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
   <button class="lb-close" onclick="closeLightbox()">×</button>
   <button class="lb-nav prev" onclick="lbNav(-1,event)">‹</button>
-  <img class="lb-img" id="lb-img" src="" alt="">
+  <img class="lb-img" id="lb-img" src="" alt="" decoding="async">
   <button class="lb-nav next" onclick="lbNav(1,event)">›</button>
   <div class="lb-counter" id="lb-counter"></div>
 </div>
 
 <script>
-// Gentle all-channel reading counter
+// One-time all-channel reading counter
 (function initReaderCounter() {
   const mainEl = document.getElementById('readerMain');
-  const tailEl = document.getElementById('readerTail');
-  if (!mainEl || !tailEl) return;
+  if (!mainEl) return;
 
-  let main = 1283;
-  let tail = 406;
-  const tick = () => {
-    tail += Math.floor(Math.random() * 4) + 1;
-    if (tail >= 1000) {
-      main += 1;
-      tail -= 1000;
-      mainEl.textContent = String(main);
+  const target = 1500;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let hasAnimated = false;
+
+  const animate = () => {
+    if (hasAnimated) return;
+    hasAnimated = true;
+    if (reduceMotion) {
+      mainEl.textContent = String(target);
+      return;
     }
-    tailEl.textContent = String(tail).padStart(3, '0');
-    tailEl.classList.add('bump');
-    window.setTimeout(() => tailEl.classList.remove('bump'), 260);
+
+    const duration = 1800;
+    const startedAt = performance.now();
+    const frame = now => {
+      const progress = Math.min((now - startedAt) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 4);
+      mainEl.textContent = String(Math.round(target * eased));
+      if (progress < 1) requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
   };
 
-  window.setInterval(tick, 2400);
+  const observer = new IntersectionObserver(entries => {
+    if (entries.some(entry => entry.isIntersecting)) {
+      animate();
+      observer.disconnect();
+    }
+  }, { threshold: 0.45 });
+  observer.observe(mainEl);
 })();
 
 // Nav active state
 function setActive(el) {
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  el.classList.add('active');
+  const target = el.getAttribute('href');
+  document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(link => {
+    link.classList.toggle('active', link.getAttribute('href') === target);
+  });
 }
 
-// Update active nav on scroll
+// Update active nav and ambient light on scroll
 const sections = ['resume','graphic','video','ip','planning'];
 const navLinks = {};
 sections.forEach(id => {
-  navLinks[id] = document.querySelector(`.nav-item[href="#${id}"]`);
+  navLinks[id] = [...document.querySelectorAll(`[href="#${id}"]`)];
 });
-window.addEventListener('scroll', () => {
+
+let scrollFramePending = false;
+function updateScrollEffects() {
+  scrollFramePending = false;
   const scrollY = window.scrollY + 100;
   let current = 'resume';
   sections.forEach(id => {
     const el = document.getElementById(id);
     if (el && el.offsetTop <= scrollY) current = id;
   });
-  Object.values(navLinks).forEach(l => l && l.classList.remove('active'));
-  if (navLinks[current]) navLinks[current].classList.add('active');
-});
+  Object.values(navLinks).flat().forEach(link => link.classList.remove('active'));
+  (navLinks[current] || []).forEach(link => link.classList.add('active'));
+
+  const maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+  const progress = Math.min(window.scrollY / maxScroll, 1);
+  const root = document.documentElement;
+  root.style.setProperty('--glow-y', `${Math.round(progress * 180)}px`);
+  root.style.setProperty('--glow-x', `${Math.round(Math.sin(progress * Math.PI * 2) * 72)}px`);
+  root.style.setProperty('--noise-x', `${Math.round(progress * -8)}px`);
+  root.style.setProperty('--noise-y', `${Math.round(progress * 12)}px`);
+}
+
+window.addEventListener('scroll', () => {
+  if (scrollFramePending) return;
+  scrollFramePending = true;
+  requestAnimationFrame(updateScrollEffects);
+}, { passive: true });
+updateScrollEffects();
 
 // Lightbox
 let lbImages = [];
@@ -2112,7 +2297,7 @@ function openLightbox(pageNum) {
   const endPage = 27;
   lbImages = [];
   for (let i = startPage; i <= endPage; i++) {
-    lbImages.push(`portfolio_pages/page_${String(i).padStart(2,'0')}.jpg`);
+    lbImages.push(`optimized/portfolio_pages/page_${String(i).padStart(2,'0')}.webp`);
   }
   lbIndex = 0;
   updateLb();
