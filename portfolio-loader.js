@@ -39,7 +39,8 @@ const PORTFOLIO_CONFIG = {
       headers: { apikey: supabaseAnon, Authorization: `Bearer ${supabaseAnon}` },
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.json();
+    const items = await res.json();
+    return items.filter(item => !String(item.title || '').startsWith('__site_content_'));
   }
 
   function renderTags(tags, tagColors) {

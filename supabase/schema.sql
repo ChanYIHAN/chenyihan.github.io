@@ -7,6 +7,7 @@
 CREATE TABLE IF NOT EXISTS portfolio_items (
   id            UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title         TEXT NOT NULL,
+  description   TEXT,
   cover_url     TEXT,
   link          TEXT,
   section       TEXT NOT NULL CHECK (section IN ('graphic', 'video', 'ip', 'planning')),
@@ -19,6 +20,9 @@ CREATE TABLE IF NOT EXISTS portfolio_items (
   created_at    TIMESTAMPTZ DEFAULT NOW(),
   updated_at    TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- 兼容已创建的旧表；页面内容编辑器也复用该字段保存结构化 JSON。
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS description TEXT;
 
 -- 2. 分类表（管理各大版块下的子分类）
 CREATE TABLE IF NOT EXISTS portfolio_categories (

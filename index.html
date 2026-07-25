@@ -1252,7 +1252,7 @@
       <div>
         <div class="reader-label">All-channel Reach</div>
         <div class="reader-title">全网内容累计阅读量</div>
-        <div class="reader-sub">截至 2026.07 · 图文评测、视频脚本、IP 栏目与展会报道</div>
+        <div class="reader-sub" data-content="hero.readerSubtitle">截至 2026.07 · 图文评测、视频脚本、IP 栏目与展会报道</div>
       </div>
       <div class="reader-number">
         <span class="reader-main" id="readerMain">0</span>
@@ -1263,23 +1263,23 @@
     <div class="hero-shell">
       <div class="hero-copy">
         <div class="hero-tag">Available for opportunities</div>
-        <h1>陈奕翰</h1>
-        <p class="hero-sub">数码 3C 资深编辑 · 内容创作者 · IP 运营</p>
+        <h1 data-content="hero.name">陈奕翰</h1>
+        <p class="hero-sub" data-content="hero.role">数码 3C 资深编辑 · 内容创作者 · IP 运营</p>
         <div class="hero-meta">
           <span class="meta-chip">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            广州 / 深圳 / 东莞
+            <span data-content="hero.location">广州 / 深圳 / 东莞</span>
           </span>
           <span class="meta-chip">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8l-1 4h10l-1-4z"/></svg>
-            太平洋科技 PConline · 资深编辑
+            <span data-content="hero.company">太平洋科技 PConline · 资深编辑</span>
           </span>
           <span class="meta-chip">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
-            27 岁 · 本科 · 网络工程
+            <span data-content="hero.education">27 岁 · 本科 · 网络工程</span>
           </span>
         </div>
-        <div class="hero-stats">
+        <div class="hero-stats" id="heroStats">
           <div class="stat-item">
             <div class="stat-num">5<span style="font-size:18px;color:var(--text2)">年</span></div>
             <div class="stat-label">媒体工作经验</div>
@@ -1319,26 +1319,30 @@
     <div class="resume-grid">
       <div class="info-card">
         <div class="info-card-title">基本信息</div>
+        <div id="resumeBasicInfo">
         <div class="info-row"><span class="lbl">姓名</span><span class="val">陈奕翰</span></div>
         <div class="info-row"><span class="lbl">性别</span><span class="val">男</span></div>
         <div class="info-row"><span class="lbl">年龄</span><span class="val">27 岁</span></div>
         <div class="info-row"><span class="lbl">学历</span><span class="val">大学本科</span></div>
         <div class="info-row"><span class="lbl">工作年限</span><span class="val">5 年</span></div>
         <div class="info-row"><span class="lbl">期望城市</span><span class="val">广州 / 深圳 / 东莞</span></div>
+        </div>
       </div>
       <div class="info-card">
         <div class="info-card-title">联系方式</div>
+        <div id="resumeContactInfo">
         <div class="info-row"><span class="lbl">电话</span><span class="val">136-1008-9696</span></div>
         <div class="info-row"><span class="lbl">邮箱</span><span class="val">cyh991008@gmail.com</span></div>
         <div class="info-row" style="margin-top:12px"><span class="lbl">领域</span><span class="val">数码 3C · DIY 硬件 · AIGC</span></div>
         <div class="info-row"><span class="lbl">擅长</span><span class="val">图文评测 · 视频脚本 · IP 运营 · 展会报道</span></div>
+        </div>
       </div>
     </div>
 
     <!-- 个人优势 -->
     <div class="advantage-block">
       <div class="block-title">个人优势</div>
-      <ul class="advantage-list">
+      <ul class="advantage-list" id="resumeAdvantages">
         <li>媒体行业 5 年工作经验，对数码 3C 行业有浓厚兴趣与深入了解，在职期间服务过 Intel、NVIDIA、AMD、微星、技嘉、七彩虹、影驰、一加、OPPO 等 DIY 硬件与 3C 数码头部品牌。</li>
         <li>拥有出色的执行和沟通能力，曾多次协助策划和执行 AWE、CES、台北电脑展等行业大型展会的线上线下报道工作，能够很好处理各种复杂大型项目。</li>
         <li>对行业热点有敏锐的直觉，善于结合时下热点，从不同角度提供创意方案和内容选题；逻辑思维严密，文字功底扎实。</li>
@@ -1349,7 +1353,7 @@
     <!-- 工作经历 -->
     <div style="margin-bottom:28px">
       <div class="info-card-title" style="color:var(--green);font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;">工作经历</div>
-      <div class="timeline">
+      <div class="timeline" id="resumeTimeline">
 
         <div class="tl-item">
           <div class="tl-dot"></div>
@@ -1395,7 +1399,7 @@
     <!-- 教育经历 -->
     <div>
       <div class="info-card-title" style="color:var(--amber);font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;">教育经历</div>
-      <div class="edu-card">
+      <div class="edu-card" id="resumeEducation">
         <div class="edu-icon">🎓</div>
         <div>
           <div class="edu-school">仲恺农业工程学院</div>
@@ -2028,6 +2032,7 @@
       </div>
     </div>
 
+    <div id="ipCaseContent">
     <div class="ip-grid">
       <div class="ip-card">
         <div class="ip-name">搞机猛男 · 太评甄选</div>
@@ -2111,6 +2116,7 @@
           <span class="al-arrow">→</span>
         </a></li>
       </ul>
+    </div>
     </div>
   </section>
 
@@ -2207,13 +2213,16 @@
   <div class="lb-counter" id="lb-counter"></div>
 </div>
 
+<script src="site-content-defaults.js"></script>
+<script src="site-content-preview.js"></script>
 <script>
 // One-time all-channel reading counter
-(function initReaderCounter() {
+(async function initReaderCounter() {
+  await (window.PORTFOLIO_CONTENT_READY || Promise.resolve());
   const mainEl = document.getElementById('readerMain');
   if (!mainEl) return;
 
-  const target = 1500;
+  const target = Number(mainEl.dataset.target) || 1500;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let hasAnimated = false;
 

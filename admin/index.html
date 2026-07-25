@@ -914,6 +914,235 @@
     .quick-action strong { display: block; font-size: 12px; margin-bottom: 2px; }
     .quick-action small { color: var(--text-muted); font-size: 10px; }
 
+    /* ===== 页面内容编辑器 ===== */
+    .content-editor-shell {
+      display: grid;
+      gap: 16px;
+    }
+    .content-editor-hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 22px 24px;
+      border: 1px solid rgba(99,230,211,.18);
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 88% 0%, rgba(99,230,211,.13), transparent 30%),
+        linear-gradient(120deg, rgba(23,31,44,.96), rgba(14,18,27,.94));
+    }
+    .content-editor-hero h2 {
+      font-size: 20px;
+      margin: 5px 0 7px;
+    }
+    .content-editor-hero p {
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.65;
+      max-width: 690px;
+    }
+    .draft-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--amber);
+      background: rgba(251,191,36,.08);
+      border: 1px solid rgba(251,191,36,.18);
+      border-radius: 999px;
+      padding: 6px 9px;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .draft-pill::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--amber);
+      box-shadow: 0 0 0 4px rgba(251,191,36,.08);
+    }
+    .editor-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+    .editor-section {
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 0 14px 36px rgba(0,0,0,.11);
+    }
+    .editor-section-heading,
+    .repeat-card-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .editor-section-heading { margin-bottom: 18px; }
+    .editor-section-heading h3,
+    .repeat-card-heading h4 {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .editor-section-heading p,
+    .repeat-card-heading p {
+      color: var(--text-muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+    .editor-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .editor-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .editor-field { min-width: 0; }
+    .editor-field.full { grid-column: 1 / -1; }
+    .editor-field label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 7px;
+    }
+    .editor-field label span {
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+    .editor-field input,
+    .editor-field textarea,
+    .editor-field select {
+      width: 100%;
+      min-width: 0;
+      color: var(--text);
+      background: rgba(7,10,16,.74);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font: inherit;
+      font-size: 13px;
+      line-height: 1.55;
+      outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+    .editor-field textarea {
+      resize: vertical;
+      min-height: 94px;
+    }
+    .editor-field input:focus,
+    .editor-field textarea:focus,
+    .editor-field select:focus {
+      border-color: rgba(99,230,211,.55);
+      box-shadow: 0 0 0 3px rgba(99,230,211,.07);
+    }
+    .field-hint {
+      color: var(--text-dim);
+      font-size: 10px;
+      line-height: 1.55;
+      margin-top: 6px;
+    }
+    .stats-editor-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .mini-stat-editor {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 58px;
+      gap: 8px;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: rgba(255,255,255,.018);
+    }
+    .mini-stat-editor .editor-field:last-child { grid-column: 1 / -1; }
+    .repeat-list { display: grid; gap: 12px; }
+    .repeat-card {
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(8,12,19,.5);
+    }
+    .repeat-card-heading { margin-bottom: 16px; }
+    .repeat-index {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .repeat-index::before {
+      content: '';
+      width: 18px;
+      height: 1px;
+      background: var(--accent);
+    }
+    .card-tools {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .icon-btn {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      color: var(--text-muted);
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .icon-btn:hover { color: var(--text); border-color: rgba(99,230,211,.25); }
+    .icon-btn.danger:hover { color: var(--red); border-color: rgba(248,113,113,.25); }
+    .experience-groups {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .group-editor {
+      padding: 13px;
+      border: 1px dashed rgba(255,255,255,.11);
+      border-radius: 11px;
+      background: rgba(255,255,255,.015);
+    }
+    .group-editor-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 9px;
+      align-items: end;
+      margin-bottom: 10px;
+    }
+    .empty-editor {
+      padding: 36px 20px;
+      text-align: center;
+      color: var(--text-muted);
+      border: 1px dashed var(--border);
+      border-radius: 13px;
+    }
+    .editor-footer-note {
+      color: var(--text-dim);
+      font-size: 10px;
+      text-align: right;
+      padding: 0 4px;
+    }
+
     :where(button, input, select, textarea, a):focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 2px;
@@ -923,6 +1152,7 @@
     @media (max-width: 1080px) {
       .dashboard-grid { grid-template-columns: 1fr; }
       .quick-actions { grid-template-columns: repeat(3, 1fr); }
+      .stats-editor-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
     @media (max-width: 900px) {
@@ -959,6 +1189,10 @@
       .modal-overlay { align-items: flex-end; }
       .toast-container { left: 16px; right: 16px; bottom: 16px; }
       .toast { min-width: 0; width: 100%; }
+      .content-editor-hero { align-items: flex-start; flex-direction: column; }
+      .editor-actions { justify-content: flex-start; }
+      .editor-grid,
+      .editor-grid.three { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 520px) {
@@ -977,6 +1211,9 @@
       .panel { padding: 18px; }
       .pagination { align-items: flex-start; gap: 12px; flex-direction: column; }
       .custom-tag-input { flex-wrap: wrap; }
+      .stats-editor-grid { grid-template-columns: 1fr; }
+      .editor-section { padding: 17px; }
+      .repeat-card { padding: 15px; }
     }
   </style>
 </head>
@@ -1018,13 +1255,23 @@
       </div>
       <div class="nav-item" data-view="ip">
         <span class="icon">💡</span>
-        <span>IP 案例</span>
+        <span>IP 作品条目</span>
         <span class="nav-badge" id="badge-ip">0</span>
       </div>
       <div class="nav-item" data-view="planning">
         <span class="icon">📐</span>
         <span>策划方案</span>
         <span class="nav-badge" id="badge-planning">0</span>
+      </div>
+
+      <div class="nav-section-label" style="margin-top:8px">页面内容</div>
+      <div class="nav-item" data-view="profile_resume">
+        <span class="icon">👤</span>
+        <span>个人简历</span>
+      </div>
+      <div class="nav-item" data-view="ip_content">
+        <span class="icon">✨</span>
+        <span>IP 案例内容</span>
       </div>
 
       <div class="nav-section-label" style="margin-top:8px">设置</div>
@@ -1137,6 +1384,14 @@
                 <span class="quick-action-icon">#</span>
                 <span><strong>整理标签</strong><small>统一内容分类与视觉标识</small></span>
               </button>
+              <button class="quick-action" type="button" onclick="switchView('profile_resume')">
+                <span class="quick-action-icon">👤</span>
+                <span><strong>更新个人简历</strong><small>调整首屏、经历与联系方式</small></span>
+              </button>
+              <button class="quick-action" type="button" onclick="switchView('ip_content')">
+                <span class="quick-action-icon">✨</span>
+                <span><strong>维护 IP 案例</strong><small>编辑栏目、数据与代表文章</small></span>
+              </button>
             </div>
           </section>
         </div>
@@ -1191,6 +1446,11 @@
         <div class="tags-grid" id="tagsGrid">
           <div style="text-align:center;padding:40px;color:var(--text-muted);grid-column:1/-1">加载中...</div>
         </div>
+      </div>
+
+      <!-- 页面内容编辑器 -->
+      <div class="view" id="view-content-editor">
+        <div id="contentEditorRoot"></div>
       </div>
 
     </div>
@@ -1335,6 +1595,7 @@
   <!-- Toast 容器 -->
   <div class="toast-container" id="toastContainer"></div>
 
+  <script src="../site-content-defaults.js"></script>
   <script>
     // 浏览器端只保留公开 anon key；权限由 Auth 会话与 RLS 控制
     const SUPABASE_CONFIG = {
@@ -1353,7 +1614,7 @@
     const adminAccessToken = sessionStorage.getItem('admin_access_token');
     const hasAdminSession = adminAccessToken && sessionStorage.getItem('admin_role') === 'admin';
 
-    async function sbFetch(path, method = 'GET', body = null) {
+    async function sbFetch(path, method = 'GET', body = null, prefer = null) {
       if (isLocalPreview && method !== 'GET') {
         throw new Error('本地预览模式为只读，正式登录后才能修改内容');
       }
@@ -1364,7 +1625,7 @@
           'Content-Type': 'application/json',
           'apikey': SB_ANON,
           'Authorization': `Bearer ${bearer}`,
-          'Prefer': ['POST', 'PATCH'].includes(method) ? 'return=representation' : '',
+          'Prefer': prefer || (['POST', 'PATCH'].includes(method) ? 'return=representation' : ''),
         }
       };
       if (body) opts.body = JSON.stringify(body);
@@ -1422,6 +1683,7 @@
       ip:       'IP 案例',
       planning: '策划方案'
     };
+    const isSystemContentItem = item => String(item?.title || '').startsWith('__site_content_');
 
     // ====================================================
     //  导航
@@ -1447,6 +1709,7 @@
       document.getElementById('view-dashboard').classList.remove('active');
       document.getElementById('view-list').classList.remove('active');
       document.getElementById('view-tags').classList.remove('active');
+      document.getElementById('view-content-editor').classList.remove('active');
 
       const addBtn = document.getElementById('addBtn');
 
@@ -1460,6 +1723,11 @@
         document.getElementById('viewTitle').textContent = '标签管理';
         addBtn.style.display = 'none';
         loadTags();
+      } else if (view === 'profile_resume' || view === 'ip_content') {
+        document.getElementById('view-content-editor').classList.add('active');
+        document.getElementById('viewTitle').textContent = view === 'profile_resume' ? '个人简历' : 'IP 案例内容';
+        addBtn.style.display = 'none';
+        renderContentEditor(view);
       } else {
         document.getElementById('view-list').classList.add('active');
         addBtn.style.display = '';
@@ -1485,7 +1753,8 @@
     // ====================================================
     async function loadDashboard() {
       try {
-        const items = await sbFetch('portfolio_items?select=id,section,is_visible');
+        const rawItems = await sbFetch('portfolio_items?select=id,title,section,is_visible');
+        const items = rawItems.filter(item => !isSystemContentItem(item));
         const total   = items.length;
         const graphic = items.filter(i => i.section === 'graphic').length;
         const video   = items.filter(i => i.section === 'video').length;
@@ -1505,7 +1774,8 @@
         document.getElementById('syncStatus').textContent = '刚刚同步';
 
         // 最近作品
-        const recent = await sbFetch('portfolio_items?select=id,title,section,created_at&order=created_at.desc&limit=5');
+        const recentRows = await sbFetch('portfolio_items?select=id,title,section,created_at&order=created_at.desc&limit=10');
+        const recent = recentRows.filter(item => !isSystemContentItem(item)).slice(0, 5);
         const html = recent.map(item => `
           <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
             <span class="section-badge sb-${item.section}">${SECTION_LABELS[item.section]}</span>
@@ -1530,7 +1800,7 @@
         let url = 'portfolio_items?order=section,sort_order,created_at.desc';
         if (section !== 'all') url += `&section=eq.${section}`;
 
-        allItems = await sbFetch(url);
+        allItems = (await sbFetch(url)).filter(item => !isSystemContentItem(item));
         filteredItems = [...allItems];
 
         // 更新分类筛选器
@@ -2029,5 +2299,6 @@
         .catch(() => {});
     });
   </script>
+  <script src="content-admin.js"></script>
 </body>
 </html>
