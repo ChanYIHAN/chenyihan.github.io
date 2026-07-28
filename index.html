@@ -23,6 +23,8 @@
     --text2: #8b949e;
     --text3: #b0b8c4;
     --nav-w: 220px;
+    --nav-half: 110px;
+    --content-pad: clamp(28px, 3.2vw, 64px);
     --accent-glow: 0 0 20px rgba(79,156,245,0.25);
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -146,28 +148,72 @@
     padding: 16px 24px 0;
     border-top: 1px solid var(--border);
   }
-  .sidebar-footer a {
-    display: block;
+  .sidebar-contact {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
     font-size: 12px;
+    font-family: inherit;
     color: var(--text2);
-    text-decoration: none;
-    margin-bottom: 6px;
-    transition: color 0.15s;
+    text-align: left;
+    padding: 6px 7px;
+    margin: 0 -7px 2px;
+    cursor: pointer;
+    transition: color 0.18s, background 0.18s;
   }
-  .sidebar-footer a:hover { color: var(--blue); }
+  .sidebar-contact svg {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 auto;
+  }
+  .sidebar-contact-value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .sidebar-copy-hint {
+    margin-left: auto;
+    font-size: 10px;
+    color: var(--blue2);
+    opacity: 0;
+    transform: translateX(4px);
+    transition: opacity 0.18s, transform 0.18s;
+  }
+  .sidebar-contact:hover,
+  .sidebar-contact:focus-visible {
+    color: var(--blue2);
+    background: rgba(79,156,245,0.1);
+    outline: none;
+  }
+  .sidebar-contact:hover .sidebar-copy-hint,
+  .sidebar-contact:focus-visible .sidebar-copy-hint {
+    opacity: 1;
+    transform: translateX(0);
+  }
 
   /* ── MAIN ── */
   .main {
     margin-left: var(--nav-w);
-    flex: 1;
-    padding: 38px 60px 80px;
-    max-width: 1220px;
+    width: calc(100% - var(--nav-w));
+    min-width: 0;
+    flex: 0 0 auto;
+    padding: 38px var(--content-pad) 80px;
+    max-width: none;
     position: relative;
     z-index: 1;
   }
   @media (max-width: 768px) {
     .sidebar { display: none; }
-    .main { margin-left: 0; padding: 24px 18px 60px; }
+    .main {
+      width: 100%;
+      margin-left: 0;
+      padding: 24px clamp(16px, 4vw, 28px) 60px;
+    }
   }
 
   /* ── HERO ── */
@@ -395,6 +441,8 @@
     display: flex;
     align-items: center;
     gap: 14px;
+    min-height: 76px;
+    padding-right: clamp(116px, 11vw, 158px);
     margin-bottom: 32px;
   }
   .section-icon {
@@ -461,6 +509,55 @@
   }
   .info-row .val {
     color: var(--text);
+  }
+  .copy-row {
+    align-items: center;
+  }
+  .copy-value-button {
+    min-width: 0;
+    max-width: 100%;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+    padding: 4px 7px;
+    margin: -4px -7px;
+    cursor: pointer;
+    transition: color 0.18s, background 0.18s, transform 0.18s;
+  }
+  .copy-value-button span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .copy-value-button svg {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 auto;
+    color: var(--text2);
+    transition: color 0.18s, transform 0.18s;
+  }
+  .copy-value-button:hover,
+  .copy-value-button:focus-visible {
+    color: var(--blue2);
+    background: rgba(79,156,245,0.1);
+    outline: none;
+  }
+  .copy-value-button:hover svg,
+  .copy-value-button:focus-visible svg {
+    color: var(--blue2);
+  }
+  .copy-value-button:active {
+    transform: scale(0.985);
+  }
+  .copy-value-button.is-copied svg,
+  .sidebar-contact.is-copied svg {
+    color: var(--green);
+    transform: scale(1.08);
   }
 
   /* ── ADVANTAGE ── */
@@ -620,28 +717,59 @@
     border-radius: 10px;
   }
 
-  /* Masonry-ish card grid */
+  /* Featured mosaic: one lead story plus compact supporting cards. */
   .card-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-flow: dense;
+    gap: clamp(12px, 1.25vw, 18px);
+    align-items: start;
   }
   .portfolio-section .work-card:first-child {
     grid-column: span 2;
+    grid-row: span 2;
+    align-self: stretch;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
   }
   .portfolio-section .work-card:first-child .card-title {
     font-size: 15px;
   }
-  @media (max-width: 1080px) {
-    .card-grid { grid-template-columns: repeat(3, 1fr); }
+  .portfolio-section .work-card:first-child .card-cover {
+    height: 100%;
+    min-height: 0;
+    aspect-ratio: auto;
   }
-  @media (max-width: 700px) {
-    .card-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .portfolio-section .work-card:first-child { grid-column: span 2; }
+  @media (min-width: 1321px) {
+    .card-grid > .work-card:nth-child(6):nth-last-child(2),
+    .card-grid > .work-card:nth-child(7):last-child {
+      grid-column: span 2;
+    }
+    .card-grid > .work-card:nth-child(6):nth-last-child(2) .card-cover,
+    .card-grid > .work-card:nth-child(7):last-child .card-cover {
+      aspect-ratio: 21 / 9;
+    }
   }
-  @media (max-width: 460px) {
+  @media (max-width: 1320px) {
+    .card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 940px) {
+    .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .portfolio-section .work-card:first-child {
+      grid-column: span 2;
+      grid-row: auto;
+      display: block;
+    }
+    .portfolio-section .work-card:first-child .card-cover {
+      height: auto;
+      aspect-ratio: 16 / 9;
+    }
+  }
+  @media (max-width: 560px) {
     .card-grid { grid-template-columns: 1fr; }
-    .portfolio-section .work-card:first-child { grid-column: auto; }
+    .portfolio-section .work-card:first-child {
+      grid-column: auto;
+    }
   }
 
   .work-card {
@@ -654,6 +782,7 @@
     display: block;
     transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
     position: relative;
+    min-width: 0;
   }
   .work-card:hover {
     transform: translateY(-4px);
@@ -730,6 +859,7 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    text-wrap: pretty;
   }
 
   /* ── IP DECORATIONS ── */
@@ -742,44 +872,86 @@
     filter: drop-shadow(0 18px 24px rgba(0,0,0,0.36));
   }
   .ip-deco-lounge {
-    width: 188px;
-    left: 28px;
-    top: -70px;
+    width: 168px;
+    left: 34px;
+    top: -54px;
     transform: rotate(-1deg);
   }
   .ip-deco-hang {
-    width: 124px;
-    right: -112px;
-    top: 10px;
+    width: 102px;
+    right: 44px;
+    top: -34px;
     transform: rotate(-3deg);
   }
   .ip-deco-sit {
-    width: 132px;
-    right: -118px;
-    top: 82px;
+    width: 112px;
+    right: 34px;
+    top: -28px;
     transform: rotate(4deg);
   }
-  .ip-deco-stand {
-    width: 130px;
-    right: -118px;
-    top: 96px;
-    transform: rotate(-4deg);
-  }
-  .ip-deco-lean {
-    width: 122px;
-    right: -112px;
-    top: 88px;
-    transform: rotate(3deg);
-  }
   .ip-deco-offer {
-    width: 106px;
-    right: -100px;
-    top: 78px;
+    width: 94px;
+    right: 38px;
+    top: -20px;
     transform: rotate(2deg);
   }
   .reader-board .ip-deco-lounge {
     opacity: 0.94;
     z-index: 2;
+  }
+  .mascot-break {
+    position: relative;
+    z-index: 2;
+    height: var(--mascot-break-height, clamp(156px, 12vw, 196px));
+    margin: 0 0 20px;
+    pointer-events: none;
+  }
+  .portfolio-section:has(+ .mascot-break) {
+    margin-bottom: 24px;
+  }
+  .section:has(> .mascot-break:last-child) {
+    margin-bottom: 48px;
+  }
+  .mascot-break::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 58%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(79,156,245,0.18) 22%, rgba(244,114,182,0.18) 78%, transparent);
+  }
+  .mascot-break::after {
+    content: '';
+    position: absolute;
+    top: calc(58% - 3px);
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--blue2);
+    box-shadow: 0 0 16px rgba(110,181,255,0.55);
+  }
+  .mascot-break img {
+    position: absolute;
+    bottom: 0;
+    z-index: 2;
+    width: var(--mascot-width, clamp(118px, 10vw, 164px));
+    height: auto;
+    filter: drop-shadow(0 16px 22px rgba(0,0,0,0.34));
+  }
+  .mascot-break--left img {
+    left: clamp(24px, 5vw, 74px);
+  }
+  .mascot-break--left::after {
+    right: clamp(12px, 3vw, 44px);
+  }
+  .mascot-break--right img {
+    right: clamp(24px, 5vw, 74px);
+  }
+  .mascot-break--right::after {
+    left: clamp(12px, 3vw, 44px);
+    background: var(--pink);
+    box-shadow: 0 0 16px rgba(244,114,182,0.5);
   }
   .ip-grid {
     display: grid;
@@ -1036,6 +1208,41 @@
     display: none;
   }
 
+  .copy-toast {
+    position: fixed;
+    left: calc(50% + var(--nav-half));
+    bottom: 28px;
+    z-index: 4000;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 44px;
+    padding: 10px 15px;
+    border: 1px solid rgba(52,211,153,0.28);
+    border-radius: 12px;
+    background: rgba(17,24,32,0.94);
+    color: var(--text);
+    box-shadow: 0 18px 50px rgba(0,0,0,0.42);
+    backdrop-filter: blur(18px) saturate(1.12);
+    -webkit-backdrop-filter: blur(18px) saturate(1.12);
+    font-size: 13px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 12px) scale(0.98);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+    pointer-events: none;
+  }
+  .copy-toast svg {
+    width: 17px;
+    height: 17px;
+    color: var(--green);
+  }
+  .copy-toast.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0) scale(1);
+  }
+
   @media (max-width: 980px) {
     .hero {
       display: flex;
@@ -1057,20 +1264,29 @@
       min-height: 360px;
     }
     .ip-hero-img { width: min(76vw, 360px); }
-    .ip-deco-sit,
-    .ip-deco-stand,
-    .ip-deco-hang,
-    .ip-deco-lean,
-    .ip-deco-offer {
-      display: none;
+    .section-header {
+      min-height: 68px;
+      padding-right: 112px;
     }
+    .ip-deco-sit { width: 94px; right: 24px; top: -20px; }
+    .ip-deco-hang { width: 86px; right: 28px; top: -26px; }
+    .ip-deco-offer { width: 78px; right: 28px; top: -14px; }
   }
-  @media (max-width: 720px) {
+  @media (max-width: 768px) {
     body {
       padding-bottom: calc(78px + env(safe-area-inset-bottom));
     }
     .main {
       padding-bottom: 42px;
+    }
+    .section-header {
+      min-height: 0;
+      padding-right: 0;
+    }
+    .ip-deco-sit,
+    .ip-deco-hang,
+    .ip-deco-offer {
+      display: none;
     }
     .mobile-dock {
       position: fixed;
@@ -1137,6 +1353,18 @@
       left: 18px;
       top: -44px;
       opacity: 0.82;
+    }
+    .copy-toast {
+      left: 50%;
+      bottom: calc(88px + env(safe-area-inset-bottom));
+      max-width: calc(100% - 32px);
+  }
+  .mascot-break {
+      height: var(--mascot-mobile-break-height, 142px);
+      margin-bottom: 18px;
+    }
+    .mascot-break img {
+      width: var(--mascot-mobile-width, 104px);
     }
   }
   @media (max-width: 520px) {
@@ -1229,8 +1457,16 @@
     </a>
   </div>
   <div class="sidebar-footer">
-    <a href="mailto:cyh991008@gmail.com">✉ cyh991008@gmail.com</a>
-    <a href="tel:13610089696">📱 136-1008-9696</a>
+    <button type="button" class="sidebar-contact" data-copy-value="cyh991008@gmail.com" data-copy-kind="邮箱" aria-label="复制邮箱 cyh991008@gmail.com">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>
+      <span class="sidebar-contact-value">cyh991008@gmail.com</span>
+      <span class="sidebar-copy-hint">复制</span>
+    </button>
+    <button type="button" class="sidebar-contact" data-copy-value="136-1008-9696" data-copy-kind="联系电话" aria-label="复制联系电话 136-1008-9696">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6.6 10.8a15.5 15.5 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24c1.1.36 2.28.54 3.46.54a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.55 21 3 13.45 3 4.14a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.18.18 2.35.54 3.46a1 1 0 0 1-.24 1z"/></svg>
+      <span class="sidebar-contact-value">136-1008-9696</span>
+      <span class="sidebar-copy-hint">复制</span>
+    </button>
   </div>
 </nav>
 
@@ -1331,8 +1567,8 @@
       <div class="info-card">
         <div class="info-card-title">联系方式</div>
         <div id="resumeContactInfo">
-        <div class="info-row"><span class="lbl">电话</span><span class="val">136-1008-9696</span></div>
-        <div class="info-row"><span class="lbl">邮箱</span><span class="val">cyh991008@gmail.com</span></div>
+        <div class="info-row copy-row"><span class="lbl">电话</span><button type="button" class="copy-value-button" data-copy-value="136-1008-9696" data-copy-kind="联系电话" aria-label="复制联系电话 136-1008-9696"><span>136-1008-9696</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button></div>
+        <div class="info-row copy-row"><span class="lbl">邮箱</span><button type="button" class="copy-value-button" data-copy-value="cyh991008@gmail.com" data-copy-kind="邮箱" aria-label="复制邮箱 cyh991008@gmail.com"><span>cyh991008@gmail.com</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button></div>
         <div class="info-row" style="margin-top:12px"><span class="lbl">领域</span><span class="val">数码 3C · DIY 硬件 · AIGC</span></div>
         <div class="info-row"><span class="lbl">擅长</span><span class="val">图文评测 · 视频脚本 · IP 运营 · 展会报道</span></div>
         </div>
@@ -1789,7 +2025,6 @@
 
   <!-- ══ 视频作品集 ══ -->
   <section class="section" id="video">
-    <img class="ip-deco ip-deco-stand" src="optimized/assets/ip/ip-stand.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="800" height="1200">
     <div class="section-header">
       <div class="section-icon" style="background:rgba(167,139,250,0.12);">🎬</div>
       <div>
@@ -2023,7 +2258,6 @@
 
   <!-- ══ IP 案例 ══ -->
   <section class="section" id="ip">
-    <img class="ip-deco ip-deco-lean" src="optimized/assets/ip/ip-lean.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="569" height="1200">
     <div class="section-header">
       <div class="section-icon" style="background:rgba(244,114,182,0.12);">✨</div>
       <div>
@@ -2117,6 +2351,9 @@
         </a></li>
       </ul>
     </div>
+    </div>
+    <div class="mascot-break mascot-break--left" style="--mascot-width:clamp(102px,8vw,132px);--mascot-mobile-width:88px;--mascot-break-height:clamp(160px,12vw,204px);--mascot-mobile-break-height:140px" aria-hidden="true">
+      <img src="optimized/assets/ip/ip-peek-wave.webp" alt="" loading="eager" decoding="async" width="1024" height="1536">
     </div>
   </section>
 
@@ -2212,6 +2449,10 @@
   <button class="lb-nav next" onclick="lbNav(1,event)">›</button>
   <div class="lb-counter" id="lb-counter"></div>
 </div>
+<div class="copy-toast" id="copyToast" role="status" aria-live="polite" aria-atomic="true">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>
+  <span id="copyToastText">已复制</span>
+</div>
 
 <script src="site-content-defaults.js"></script>
 <script src="site-content-preview.js"></script>
@@ -2253,6 +2494,145 @@
   }, { threshold: 0.45 });
   observer.observe(mainEl);
 })();
+
+// Click-to-copy contact details with accessible toast feedback
+let copyToastTimer = 0;
+
+function fallbackCopyText(value) {
+  const textarea = document.createElement('textarea');
+  textarea.value = value;
+  textarea.setAttribute('readonly', '');
+  textarea.style.position = 'fixed';
+  textarea.style.left = '-9999px';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  const copied = document.execCommand('copy');
+  textarea.remove();
+  if (!copied) throw new Error('copy command was rejected');
+}
+
+async function copyText(value) {
+  if (navigator.clipboard && window.isSecureContext) {
+    try {
+      await navigator.clipboard.writeText(value);
+      return;
+    } catch (error) {
+      console.warn('[contact-copy] Clipboard API unavailable, using fallback.', error);
+    }
+  }
+  fallbackCopyText(value);
+}
+
+function showCopyToast(message, isError = false) {
+  const toast = document.getElementById('copyToast');
+  const text = document.getElementById('copyToastText');
+  if (!toast || !text) return;
+  text.textContent = message;
+  toast.style.borderColor = isError ? 'rgba(244,114,182,0.34)' : '';
+  toast.classList.add('is-visible');
+  window.clearTimeout(copyToastTimer);
+  copyToastTimer = window.setTimeout(() => {
+    toast.classList.remove('is-visible');
+  }, 2200);
+}
+
+document.addEventListener('click', async event => {
+  const trigger = event.target.closest('[data-copy-value]');
+  if (!trigger) return;
+
+  event.preventDefault();
+  const value = trigger.dataset.copyValue || '';
+  const kind = trigger.dataset.copyKind || '内容';
+  if (!value) return;
+
+  try {
+    await copyText(value);
+    trigger.classList.add('is-copied');
+    window.setTimeout(() => trigger.classList.remove('is-copied'), 900);
+    showCopyToast(`已复制${kind}`);
+  } catch (error) {
+    console.error('[contact-copy] Unable to copy contact detail.', error);
+    showCopyToast('复制失败，请手动复制', true);
+  }
+});
+
+// Add decorative IP interludes after static or dynamically loaded portfolio groups
+function createPortfolioMascotBreak({
+  side,
+  src,
+  width,
+  mobileWidth,
+  breakHeight,
+  mobileBreakHeight,
+  imageWidth,
+  imageHeight
+}) {
+  const wrapper = document.createElement('div');
+  wrapper.className = `mascot-break mascot-break--${side} portfolio-mascot-break`;
+  wrapper.setAttribute('aria-hidden', 'true');
+  wrapper.style.setProperty('--mascot-width', width);
+  wrapper.style.setProperty('--mascot-mobile-width', mobileWidth);
+  wrapper.style.setProperty('--mascot-break-height', breakHeight);
+  wrapper.style.setProperty('--mascot-mobile-break-height', mobileBreakHeight);
+
+  const image = document.createElement('img');
+  image.src = src;
+  image.alt = '';
+  image.loading = 'eager';
+  image.decoding = 'async';
+  image.width = imageWidth;
+  image.height = imageHeight;
+  wrapper.appendChild(image);
+  return wrapper;
+}
+
+function mountPortfolioMascots() {
+  document.querySelectorAll('.portfolio-mascot-break').forEach(element => element.remove());
+
+  const placements = [
+    {
+      sectionId: 'graphic',
+      anchor: 'last',
+      side: 'right',
+      src: 'optimized/assets/ip/ip-carry-chip.webp',
+      width: 'clamp(108px, 8vw, 138px)',
+      mobileWidth: '88px',
+      breakHeight: 'clamp(174px, 13vw, 212px)',
+      mobileBreakHeight: '140px',
+      imageWidth: 1024,
+      imageHeight: 1536
+    },
+    {
+      sectionId: 'video',
+      anchor: 0,
+      side: 'left',
+      src: 'optimized/assets/ip/ip-review-camera.webp',
+      width: 'clamp(168px, 14vw, 228px)',
+      mobileWidth: '130px',
+      breakHeight: 'clamp(122px, 10vw, 158px)',
+      mobileBreakHeight: '102px',
+      imageWidth: 1536,
+      imageHeight: 1024
+    }
+  ];
+
+  placements.forEach(placement => {
+    const container = document.getElementById(placement.sectionId);
+    if (!container) return;
+    const groups = Array.from(container.children)
+      .filter(element => element.classList.contains('portfolio-section'));
+    if (groups.length === 0) return;
+
+    const anchor = placement.anchor === 'last'
+      ? groups[groups.length - 1]
+      : groups[Math.min(Number(placement.anchor) || 0, groups.length - 1)];
+    anchor.after(createPortfolioMascotBreak(placement));
+  });
+}
+
+window.mountPortfolioMascots = mountPortfolioMascots;
+mountPortfolioMascots();
 
 // Nav active state
 function setActive(el) {

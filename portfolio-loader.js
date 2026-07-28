@@ -102,6 +102,7 @@ const PORTFOLIO_CONFIG = {
           </div>`;
         container.appendChild(sec);
       });
+      window.mountPortfolioMascots?.();
 
       console.log(`[portfolio-loader] ${sectionId}: 已加载 ${items.length} 条动态数据`);
     } catch (err) {

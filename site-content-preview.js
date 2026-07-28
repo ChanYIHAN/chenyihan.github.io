@@ -29,12 +29,32 @@
   };
 
   function renderInfoRows(items) {
-    return (items || []).map(item => `
-      <div class="info-row">
-        <span class="lbl">${escapeHtml(item.label)}</span>
-        <span class="val">${escapeHtml(item.value)}</span>
-      </div>
-    `).join('');
+    return (items || []).map(item => {
+      const label = String(item.label || '');
+      const value = String(item.value || '');
+      const copyKind = /邮箱|邮件|email/i.test(label)
+        ? '邮箱'
+        : (/电话|手机|联系电话/.test(label) ? '联系电话' : '');
+
+      if (copyKind) {
+        return `
+          <div class="info-row copy-row">
+            <span class="lbl">${escapeHtml(label)}</span>
+            <button type="button" class="copy-value-button" data-copy-value="${escapeHtml(value)}" data-copy-kind="${copyKind}" aria-label="复制${copyKind} ${escapeHtml(value)}">
+              <span>${escapeHtml(value)}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+            </button>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="info-row">
+          <span class="lbl">${escapeHtml(label)}</span>
+          <span class="val">${escapeHtml(value)}</span>
+        </div>
+      `;
+    }).join('');
   }
 
   function renderExperience(experience, index) {
