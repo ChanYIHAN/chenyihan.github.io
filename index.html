@@ -76,6 +76,292 @@
     will-change: transform;
   }
 
+  /* ── INTERACTIVE HERO GATE ── */
+  body.hero-gate-open { overflow: hidden; }
+  .hero-gate[hidden] { display: none; }
+  .hero-gate {
+    --gate-pointer-x: 50vw;
+    --gate-pointer-y: 50vh;
+    --gate-shift-x: 0px;
+    --gate-shift-y: 0px;
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    overflow: hidden;
+    color: var(--text);
+    background:
+      radial-gradient(circle at 72% 32%, rgba(79,156,245,0.12), transparent 30%),
+      radial-gradient(circle at 30% 80%, rgba(244,114,182,0.09), transparent 28%),
+      linear-gradient(145deg, #080c11 0%, #111820 56%, #090d12 100%);
+    transition: opacity 720ms cubic-bezier(0.65, 0, 0.35, 1), transform 720ms cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .hero-gate::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.58;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px),
+      radial-gradient(circle, rgba(255,255,255,0.14) 0 0.45px, transparent 0.8px);
+    background-size: 80px 80px, 80px 80px, 5px 5px;
+    -webkit-mask-image: radial-gradient(circle at center, #000 18%, rgba(0,0,0,0.9) 60%, transparent 100%);
+    mask-image: radial-gradient(circle at center, #000 18%, rgba(0,0,0,0.9) 60%, transparent 100%);
+  }
+  .hero-gate::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(260px circle at var(--gate-pointer-x) var(--gate-pointer-y), rgba(110,181,255,0.18), transparent 72%);
+    opacity: 0.85;
+    transition: opacity 300ms ease;
+  }
+  .hero-gate.is-exiting {
+    opacity: 0;
+    transform: scale(1.035);
+    pointer-events: none;
+  }
+  .hero-gate__top {
+    position: absolute;
+    top: clamp(22px, 4vh, 40px);
+    right: clamp(22px, 4vw, 64px);
+    left: clamp(22px, 4vw, 64px);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+  .hero-gate__brand {
+    color: var(--text);
+    font-size: clamp(13px, 1.3vw, 18px);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+  }
+  .hero-gate__brand span {
+    display: block;
+    margin-top: 8px;
+    color: var(--text2);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+  }
+  .hero-gate__status {
+    display: inline-flex;
+    min-height: 36px;
+    padding: 0 15px;
+    align-items: center;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 999px;
+    color: var(--text3);
+    background: rgba(17,24,32,0.52);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    backdrop-filter: blur(12px);
+  }
+  .hero-gate__stage {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 112px 24px 148px;
+    transition: opacity 560ms ease, transform 720ms cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .hero-gate.is-exiting .hero-gate__stage {
+    opacity: 0;
+    transform: scale(0.96) translateY(-14px);
+  }
+  .hero-gate__orb {
+    position: absolute;
+    top: 52%;
+    left: 50%;
+    width: clamp(270px, 39vw, 560px);
+    aspect-ratio: 1;
+    border: 1px solid rgba(110,181,255,0.46);
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 48% 42%, rgba(79,156,245,0.18), transparent 42%),
+      rgba(7,12,18,0.44);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.035),
+      0 0 70px rgba(79,156,245,0.16),
+      inset 0 0 80px rgba(79,156,245,0.08);
+    transform: translate(-50%, -50%) translate3d(var(--gate-shift-x), var(--gate-shift-y), 0);
+    transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 260ms ease;
+  }
+  .hero-gate__orb::before,
+  .hero-gate__orb::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .hero-gate__orb::before {
+    inset: 14px;
+    border: 1px dashed rgba(244,114,182,0.34);
+    animation: gateOrbit 18s linear infinite;
+  }
+  .hero-gate__orb::after {
+    inset: 32%;
+    border: 1px solid rgba(34,211,238,0.44);
+    box-shadow: 0 0 30px rgba(34,211,238,0.18);
+  }
+  .hero-gate__ip {
+    position: absolute;
+    right: 8%;
+    bottom: 3%;
+    z-index: 2;
+    width: clamp(185px, 23vw, 332px);
+    height: auto;
+    filter: drop-shadow(0 24px 28px rgba(0,0,0,0.42));
+    transform: translate3d(calc(var(--gate-shift-x) * -0.55), calc(var(--gate-shift-y) * -0.55), 0);
+    transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .hero-gate__copy {
+    position: relative;
+    z-index: 4;
+    width: min(92vw, 1020px);
+    margin-top: 10vh;
+    text-align: center;
+    transform: translate3d(calc(var(--gate-shift-x) * 0.2), calc(var(--gate-shift-y) * 0.2), 0);
+    transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    pointer-events: none;
+  }
+  .hero-gate__eyebrow {
+    margin-bottom: 20px;
+    color: var(--blue2);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+  }
+  .hero-gate__title {
+    margin: 0;
+    color: var(--text);
+    font-size: clamp(48px, 8.5vw, 132px);
+    font-weight: 800;
+    letter-spacing: -0.065em;
+    line-height: 0.92;
+    text-wrap: balance;
+  }
+  .hero-gate__title em {
+    display: block;
+    margin-top: 0.12em;
+    color: var(--text);
+    font-style: normal;
+    -webkit-text-stroke: 0;
+    text-shadow: 0 2px 0 rgba(7,12,18,0.92), 0 0 36px rgba(79,156,245,0.28);
+  }
+  .hero-gate__subtitle {
+    max-width: 550px;
+    margin: 24px auto 0;
+    color: var(--text3);
+    font-size: clamp(12px, 1.3vw, 16px);
+    letter-spacing: 0.12em;
+    line-height: 1.7;
+    text-transform: uppercase;
+  }
+  .hero-gate__enter {
+    position: absolute;
+    bottom: clamp(28px, 5vh, 58px);
+    left: 50%;
+    z-index: 5;
+    display: inline-flex;
+    min-width: 206px;
+    min-height: 54px;
+    padding: 0 22px;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: 1px solid rgba(110,181,255,0.58);
+    border-radius: 999px;
+    color: #071018;
+    background: var(--blue2);
+    box-shadow: 0 14px 36px rgba(79,156,245,0.22), 0 0 0 5px rgba(110,181,255,0.08);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    transform: translateX(-50%);
+    transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+  .hero-gate__enter:hover,
+  .hero-gate__enter:focus-visible {
+    background: #a8d5ff;
+    box-shadow: 0 18px 44px rgba(79,156,245,0.3), 0 0 0 7px rgba(110,181,255,0.12);
+    outline: none;
+    transform: translateX(-50%) translateY(-2px);
+  }
+  .hero-gate__enter:active { transform: translateX(-50%) translateY(1px) scale(0.985); }
+  .hero-gate__enter-arrow { font-size: 18px; line-height: 1; }
+  .hero-gate__footnote {
+    position: absolute;
+    right: clamp(22px, 4vw, 64px);
+    bottom: clamp(32px, 5vh, 60px);
+    z-index: 3;
+    color: var(--text2);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  @keyframes gateOrbit {
+    to { transform: rotate(360deg); }
+  }
+  @media (min-width: 769px) {
+    .hero-gate__stage { display: block; }
+    .hero-gate__orb {
+      left: auto;
+      right: clamp(32px, 5vw, 96px);
+      transform: translate(0, -50%) translate3d(var(--gate-shift-x), var(--gate-shift-y), 0);
+    }
+    .hero-gate__copy {
+      position: absolute;
+      top: 52%;
+      left: clamp(42px, 8vw, 132px);
+      width: min(44vw, 620px);
+      margin: 0;
+      text-align: left;
+      transform: translate3d(calc(var(--gate-shift-x) * 0.2), calc(-50% + var(--gate-shift-y) * 0.2), 0);
+    }
+    .hero-gate__subtitle { margin-left: 0; }
+  }
+  @media (max-width: 768px) {
+    .hero-gate__top { top: 18px; right: 18px; left: 18px; }
+    .hero-gate__brand { font-size: 12px; }
+    .hero-gate__brand span { margin-top: 5px; font-size: 8px; }
+    .hero-gate__status { min-height: 32px; padding: 0 10px; font-size: 9px; }
+    .hero-gate__stage { padding: 100px 16px 132px; }
+    .hero-gate__orb { top: 52%; width: min(82vw, 380px); }
+    .hero-gate__ip { right: 4%; width: min(48vw, 210px); }
+    .hero-gate__copy { margin-top: 4vh; }
+    .hero-gate__eyebrow { margin-bottom: 14px; font-size: 9px; }
+    .hero-gate__title { font-size: clamp(42px, 13vw, 74px); }
+    .hero-gate__subtitle { margin-top: 16px; font-size: 10px; letter-spacing: 0.08em; }
+    .hero-gate__enter { bottom: 28px; min-height: 50px; min-width: 190px; }
+    .hero-gate__footnote { display: none; }
+  }
+  @media (max-width: 480px) {
+    .hero-gate__status { display: none; }
+    .hero-gate__orb { top: 50%; width: min(88vw, 360px); }
+    .hero-gate__ip { right: -4%; bottom: -18%; width: min(34vw, 145px); }
+    .hero-gate__copy { margin-top: -20vh; }
+    .hero-gate__title { font-size: clamp(38px, 14vw, 64px); }
+    .hero-gate__subtitle { max-width: 280px; font-size: 9px; line-height: 1.5; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-gate,
+    .hero-gate__stage,
+    .hero-gate__orb,
+    .hero-gate__ip,
+    .hero-gate__copy,
+    .hero-gate__enter { transition-duration: 1ms; }
+    .hero-gate__orb::before { animation: none; }
+  }
+
   /* ── SCROLLBAR ── */
   ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
@@ -206,6 +492,7 @@
     max-width: none;
     position: relative;
     z-index: 1;
+    outline: none;
   }
   @media (max-width: 768px) {
     .sidebar { display: none; }
@@ -1425,12 +1712,39 @@
   }
 </style>
 </head>
-<body>
+<body class="hero-gate-open">
+
+<div class="hero-gate" id="heroGate" role="dialog" aria-modal="true" aria-labelledby="heroGateTitle" aria-describedby="heroGateHint">
+  <div class="hero-gate__top" aria-hidden="true">
+    <div class="hero-gate__brand">
+      CHENYIHAN
+      <span>Portfolio 2026 / Personal Index</span>
+    </div>
+    <div class="hero-gate__status">Interactive entry / 01</div>
+  </div>
+
+  <div class="hero-gate__stage">
+    <div class="hero-gate__orb" aria-hidden="true">
+      <img class="hero-gate__ip" src="optimized/assets/ip/chenyihan-ip.webp" alt="" loading="eager" decoding="async" width="900" height="1200">
+    </div>
+    <div class="hero-gate__copy">
+      <div class="hero-gate__eyebrow">A personal index / visual editor</div>
+      <h1 class="hero-gate__title" id="heroGateTitle">HELLO, I'M<em>陈奕翰</em></h1>
+      <p class="hero-gate__subtitle">数码 3C · 内容创作 · IP 运营 · AIGC</p>
+    </div>
+  </div>
+
+  <button class="hero-gate__enter" type="button" data-hero-enter aria-describedby="heroGateHint">
+    <span>点击进入简历</span>
+    <span class="hero-gate__enter-arrow" aria-hidden="true">↗</span>
+  </button>
+  <p class="hero-gate__footnote" id="heroGateHint">Move / click to shift the light</p>
+</div>
 
 <div class="background-atmosphere" aria-hidden="true"></div>
 
 <!-- ── SIDEBAR ── -->
-<nav class="sidebar">
+<nav class="sidebar" inert>
   <div class="sidebar-logo">
     <div class="name">陈奕翰</div>
     <div class="sub">Portfolio 2026</div>
@@ -1470,7 +1784,7 @@
   </div>
 </nav>
 
-<nav class="mobile-dock" aria-label="移动端主要导航">
+<nav class="mobile-dock" aria-label="移动端主要导航" inert>
   <a class="mobile-nav-item active" href="#resume" onclick="setActive(this)">简历</a>
   <a class="mobile-nav-item" href="#graphic" onclick="setActive(this)">图文</a>
   <a class="mobile-nav-item" href="#video" onclick="setActive(this)">视频</a>
@@ -1479,7 +1793,7 @@
 </nav>
 
 <!-- ── MAIN ── -->
-<main class="main">
+<main class="main" id="resumeMain" inert>
 
   <!-- HERO -->
   <section class="hero" id="top">
@@ -2633,6 +2947,64 @@ function mountPortfolioMascots() {
 
 window.mountPortfolioMascots = mountPortfolioMascots;
 mountPortfolioMascots();
+
+// Interactive Hero gate: keep the resume behind a deliberate entry moment.
+(() => {
+  const gate = document.getElementById('heroGate');
+  const enterButton = gate?.querySelector('[data-hero-enter]');
+  const resumeMain = document.getElementById('resumeMain');
+  if (!gate || !enterButton || !resumeMain) return;
+
+  const lockedElements = [
+    document.querySelector('.sidebar'),
+    document.querySelector('.mobile-dock'),
+    resumeMain
+  ].filter(Boolean);
+  const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let hasEntered = false;
+
+  const resetPointer = () => {
+    gate.style.setProperty('--gate-pointer-x', '50vw');
+    gate.style.setProperty('--gate-pointer-y', '50vh');
+    gate.style.setProperty('--gate-shift-x', '0px');
+    gate.style.setProperty('--gate-shift-y', '0px');
+  };
+
+  const enterResume = () => {
+    if (hasEntered) return;
+    hasEntered = true;
+    gate.classList.add('is-exiting');
+    const exitDelay = reducedMotionQuery.matches ? 24 : 760;
+
+    window.setTimeout(() => {
+      gate.hidden = true;
+      document.body.classList.remove('hero-gate-open');
+      lockedElements.forEach(element => element.removeAttribute('inert'));
+      resumeMain.setAttribute('tabindex', '-1');
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      resumeMain.focus({ preventScroll: true });
+    }, exitDelay);
+  };
+
+  enterButton.addEventListener('click', enterResume);
+  enterButton.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    enterResume();
+  });
+  gate.addEventListener('pointermove', event => {
+    if (event.pointerType === 'touch' || reducedMotionQuery.matches) return;
+    const bounds = gate.getBoundingClientRect();
+    const normalizedX = event.clientX / window.innerWidth - 0.5;
+    const normalizedY = event.clientY / window.innerHeight - 0.5;
+    gate.style.setProperty('--gate-pointer-x', `${event.clientX}px`);
+    gate.style.setProperty('--gate-pointer-y', `${event.clientY}px`);
+    gate.style.setProperty('--gate-shift-x', `${normalizedX * 18}px`);
+    gate.style.setProperty('--gate-shift-y', `${normalizedY * 14}px`);
+    if (!bounds.width) resetPointer();
+  });
+  gate.addEventListener('pointerleave', resetPointer);
+})();
 
 // Nav active state
 function setActive(el) {
