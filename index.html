@@ -741,7 +741,7 @@
   }
   /* ── SECTION ── */
   .section {
-    margin-bottom: 72px;
+    margin-bottom: 0;
     position: relative;
   }
   .section-header,
@@ -1218,8 +1218,8 @@
   .mascot-break {
     position: relative;
     z-index: 2;
-    height: var(--mascot-break-height, clamp(156px, 12vw, 196px));
-    margin: 0 0 20px;
+    height: var(--mascot-break-height, clamp(168px, 11vw, 188px));
+    margin: 0 0 var(--chapter-gap, clamp(42px, 4vw, 56px));
     pointer-events: none;
   }
   .portfolio-section:has(+ .mascot-break) {
@@ -1233,14 +1233,14 @@
     position: absolute;
     left: 0;
     right: 0;
-    top: 58%;
+    top: 56%;
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(79,156,245,0.18) 22%, rgba(244,114,182,0.18) 78%, transparent);
   }
   .mascot-break::after {
     content: '';
     position: absolute;
-    top: calc(58% - 3px);
+    top: calc(56% - 3px);
     width: 7px;
     height: 7px;
     border-radius: 50%;
@@ -1252,6 +1252,8 @@
     bottom: 0;
     z-index: 2;
     width: var(--mascot-width, clamp(118px, 10vw, 164px));
+    max-height: calc(100% - 12px);
+    object-fit: contain;
     height: auto;
     filter: drop-shadow(0 16px 22px rgba(0,0,0,0.34));
   }
@@ -1268,6 +1270,11 @@
     left: clamp(12px, 3vw, 44px);
     background: var(--pink);
     box-shadow: 0 0 16px rgba(244,114,182,0.5);
+  }
+  /* Every chapter transition uses the same reserved height and bottom gap.
+     The mascot artwork can vary, but the rhythm never changes. */
+  .mascot-break + .section {
+    scroll-margin-top: 24px;
   }
   .ip-grid {
     display: grid;
@@ -1676,8 +1683,8 @@
       max-width: calc(100% - 32px);
   }
   .mascot-break {
-      height: var(--mascot-mobile-break-height, 142px);
-      margin-bottom: 18px;
+      height: var(--mascot-mobile-break-height, 132px);
+      margin-bottom: var(--chapter-mobile-gap, 36px);
     }
     .mascot-break img {
       width: var(--mascot-mobile-width, 104px);
@@ -1993,8 +2000,11 @@
   </section>
 
   <!-- ══ 图文作品集 ══ -->
+  <div class="mascot-break mascot-break--right" style="--mascot-width:clamp(108px,8vw,136px);--mascot-mobile-width:90px;--mascot-break-height:clamp(168px,11vw,188px);--mascot-mobile-break-height:132px" aria-hidden="true">
+    <img src="optimized/assets/ip/ip-lean.webp" alt="" loading="eager" decoding="async" width="800" height="1200">
+  </div>
+
   <section class="section" id="graphic">
-    <img class="ip-deco ip-deco-hang" src="optimized/assets/ip/ip-hang.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="800" height="1200">
     <div class="section-header">
       <div class="section-icon" style="background:rgba(79,156,245,0.12);">📝</div>
       <div>
@@ -2369,7 +2379,7 @@
     </div>
   </section>
 
-  <div class="mascot-break mascot-break--left" style="--mascot-width:clamp(102px,8vw,132px);--mascot-mobile-width:88px;--mascot-break-height:clamp(160px,12vw,204px);--mascot-mobile-break-height:140px" aria-hidden="true">
+  <div class="mascot-break mascot-break--left" style="--mascot-width:clamp(108px,8vw,136px);--mascot-mobile-width:90px;--mascot-break-height:clamp(168px,11vw,188px);--mascot-mobile-break-height:132px" aria-hidden="true">
     <img src="optimized/assets/ip/ip-peek-wave.webp" alt="" loading="eager" decoding="async" width="1024" height="1536">
   </div>
 
@@ -2607,6 +2617,10 @@
   </section>
 
   <!-- ══ IP 案例 ══ -->
+  <div class="mascot-break mascot-break--right" style="--mascot-width:clamp(108px,8vw,136px);--mascot-mobile-width:90px;--mascot-break-height:clamp(168px,11vw,188px);--mascot-mobile-break-height:132px" aria-hidden="true">
+    <img src="optimized/assets/ip/ip-carry-chip.webp" alt="" loading="eager" decoding="async" width="1024" height="1536">
+  </div>
+
   <section class="section" id="ip">
     <div class="section-header">
       <div class="section-icon" style="background:rgba(244,114,182,0.12);">✨</div>
@@ -2705,8 +2719,11 @@
   </section>
 
   <!-- ══ 策划相关 ══ -->
+  <div class="mascot-break mascot-break--left" style="--mascot-width:clamp(146px,13vw,190px);--mascot-mobile-width:126px;--mascot-break-height:clamp(168px,11vw,188px);--mascot-mobile-break-height:132px" aria-hidden="true">
+    <img src="optimized/assets/ip/ip-review-camera.webp" alt="" loading="eager" decoding="async" width="1536" height="1024">
+  </div>
+
   <section class="section" id="planning">
-    <img class="ip-deco ip-deco-offer" src="optimized/assets/ip/ip-offer.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="900" height="1200">
     <div class="section-header">
       <div class="section-icon" style="background:rgba(52,211,153,0.12);">📋</div>
       <div>
@@ -2904,78 +2921,10 @@ document.addEventListener('click', async event => {
   }
 });
 
-// Add decorative IP interludes after static or dynamically loaded portfolio groups
-function createPortfolioMascotBreak({
-  side,
-  src,
-  width,
-  mobileWidth,
-  breakHeight,
-  mobileBreakHeight,
-  imageWidth,
-  imageHeight
-}) {
-  const wrapper = document.createElement('div');
-  wrapper.className = `mascot-break mascot-break--${side} portfolio-mascot-break`;
-  wrapper.setAttribute('aria-hidden', 'true');
-  wrapper.style.setProperty('--mascot-width', width);
-  wrapper.style.setProperty('--mascot-mobile-width', mobileWidth);
-  wrapper.style.setProperty('--mascot-break-height', breakHeight);
-  wrapper.style.setProperty('--mascot-mobile-break-height', mobileBreakHeight);
-
-  const image = document.createElement('img');
-  image.src = src;
-  image.alt = '';
-  image.loading = 'eager';
-  image.decoding = 'async';
-  image.width = imageWidth;
-  image.height = imageHeight;
-  wrapper.appendChild(image);
-  return wrapper;
-}
-
+// Keep the loader hook stable; chapter separators are static siblings with
+// one shared rhythm, so dynamic portfolio refreshes must not add extra breaks.
 function mountPortfolioMascots() {
   document.querySelectorAll('.portfolio-mascot-break').forEach(element => element.remove());
-
-  const placements = [
-    {
-      sectionId: 'video',
-      anchor: 'last',
-      side: 'right',
-      src: 'optimized/assets/ip/ip-carry-chip.webp',
-      width: 'clamp(108px, 8vw, 138px)',
-      mobileWidth: '88px',
-      breakHeight: 'clamp(174px, 13vw, 212px)',
-      mobileBreakHeight: '140px',
-      imageWidth: 1024,
-      imageHeight: 1536
-    },
-    {
-      sectionId: 'video',
-      anchor: 0,
-      side: 'left',
-      src: 'optimized/assets/ip/ip-review-camera.webp',
-      width: 'clamp(168px, 14vw, 228px)',
-      mobileWidth: '130px',
-      breakHeight: 'clamp(122px, 10vw, 158px)',
-      mobileBreakHeight: '102px',
-      imageWidth: 1536,
-      imageHeight: 1024
-    }
-  ];
-
-  placements.forEach(placement => {
-    const container = document.getElementById(placement.sectionId);
-    if (!container) return;
-    const groups = Array.from(container.children)
-      .filter(element => element.classList.contains('portfolio-section'));
-    if (groups.length === 0) return;
-
-    const anchor = placement.anchor === 'last'
-      ? groups[groups.length - 1]
-      : groups[Math.min(Number(placement.anchor) || 0, groups.length - 1)];
-    anchor.after(createPortfolioMascotBreak(placement));
-  });
 }
 
 window.mountPortfolioMascots = mountPortfolioMascots;
