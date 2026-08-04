@@ -248,13 +248,41 @@
     line-height: 0.92;
     text-wrap: balance;
   }
-  .hero-gate__title em {
+  .hero-gate__title-line {
+    display: block;
+    min-height: 0.92em;
+  }
+  .hero-gate__title-name-row {
     display: block;
     margin-top: 0.12em;
+    min-height: 0.92em;
+  }
+  .hero-gate__title em {
+    display: inline;
+    margin-top: 0;
     color: var(--text);
     font-style: normal;
     -webkit-text-stroke: 0;
     text-shadow: 0 2px 0 rgba(7,12,18,0.92), 0 0 36px rgba(79,156,245,0.28);
+  }
+  .hero-gate__type-cursor {
+    display: inline-block;
+    width: 0.075em;
+    height: 0.78em;
+    margin-left: 0.16em;
+    border-radius: 999px;
+    background: var(--blue2);
+    box-shadow: 0 0 18px rgba(110,181,255,0.72);
+    vertical-align: -0.02em;
+    opacity: 0;
+  }
+  .hero-gate__type-cursor.is-active {
+    opacity: 1;
+    animation: heroTypeCursor 820ms steps(1, end) infinite;
+  }
+  @keyframes heroTypeCursor {
+    0%, 48% { opacity: 1; }
+    49%, 100% { opacity: 0; }
   }
   .hero-gate__subtitle {
     max-width: 550px;
@@ -360,6 +388,7 @@
     .hero-gate__copy,
     .hero-gate__enter { transition-duration: 1ms; }
     .hero-gate__orb::before { animation: none; }
+    .hero-gate__type-cursor { animation: none !important; opacity: 1; }
   }
 
   /* ── SCROLLBAR ── */
@@ -1729,7 +1758,10 @@
     </div>
     <div class="hero-gate__copy">
       <div class="hero-gate__eyebrow">A personal index / visual editor</div>
-      <h1 class="hero-gate__title" id="heroGateTitle">HELLO, I'M<em>陈奕翰</em></h1>
+      <h1 class="hero-gate__title" id="heroGateTitle" aria-label="HELLO, I'M 陈奕翰">
+        <span class="hero-gate__title-line" data-text-type-prefix="HELLO, I'M"><span class="hero-gate__type-text">HELLO, I'M</span><span class="hero-gate__type-cursor hero-gate__type-cursor--prefix is-active" aria-hidden="true"></span></span>
+        <span class="hero-gate__title-name-row"><em class="hero-gate__title-line" data-text-type-name="陈奕翰">陈奕翰</em><span class="hero-gate__type-cursor hero-gate__type-cursor--name" aria-hidden="true"></span></span>
+      </h1>
       <p class="hero-gate__subtitle">数码 3C · 内容创作 · IP 运营 · AIGC</p>
     </div>
   </div>
@@ -2337,6 +2369,10 @@
     </div>
   </section>
 
+  <div class="mascot-break mascot-break--left" style="--mascot-width:clamp(102px,8vw,132px);--mascot-mobile-width:88px;--mascot-break-height:clamp(160px,12vw,204px);--mascot-mobile-break-height:140px" aria-hidden="true">
+    <img src="optimized/assets/ip/ip-peek-wave.webp" alt="" loading="eager" decoding="async" width="1024" height="1536">
+  </div>
+
   <!-- ══ 视频作品集 ══ -->
   <section class="section" id="video">
     <div class="section-header">
@@ -2666,9 +2702,6 @@
       </ul>
     </div>
     </div>
-    <div class="mascot-break mascot-break--left" style="--mascot-width:clamp(102px,8vw,132px);--mascot-mobile-width:88px;--mascot-break-height:clamp(160px,12vw,204px);--mascot-mobile-break-height:140px" aria-hidden="true">
-      <img src="optimized/assets/ip/ip-peek-wave.webp" alt="" loading="eager" decoding="async" width="1024" height="1536">
-    </div>
   </section>
 
   <!-- ══ 策划相关 ══ -->
@@ -2906,7 +2939,7 @@ function mountPortfolioMascots() {
 
   const placements = [
     {
-      sectionId: 'graphic',
+      sectionId: 'video',
       anchor: 'last',
       side: 'right',
       src: 'optimized/assets/ip/ip-carry-chip.webp',
@@ -2947,6 +2980,58 @@ function mountPortfolioMascots() {
 
 window.mountPortfolioMascots = mountPortfolioMascots;
 mountPortfolioMascots();
+
+// Text Type-inspired Hero title: type the identity in two measured beats.
+(() => {
+  const title = document.getElementById('heroGateTitle');
+  const prefix = title?.querySelector('[data-text-type-prefix]');
+  const prefixText = prefix?.querySelector('.hero-gate__type-text');
+  const name = title?.querySelector('[data-text-type-name]');
+  const prefixCursor = title?.querySelector('.hero-gate__type-cursor--prefix');
+  const nameCursor = title?.querySelector('.hero-gate__type-cursor--name');
+  if (!prefix || !prefixText || !name || !prefixCursor || !nameCursor) return;
+
+  const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const prefixValue = prefix.dataset.textTypePrefix || '';
+  const nameValue = name.dataset.textTypeName || '';
+
+  const setCursor = activeCursor => {
+    prefixCursor.classList.toggle('is-active', activeCursor === prefixCursor);
+    nameCursor.classList.toggle('is-active', activeCursor === nameCursor);
+  };
+
+  if (reducedMotionQuery.matches) {
+    prefixText.textContent = prefixValue;
+    name.textContent = nameValue;
+    setCursor(null);
+    return;
+  }
+
+  prefixText.textContent = '';
+  name.textContent = '';
+  setCursor(prefixCursor);
+
+  const typeLine = (target, value, speed, onComplete) => {
+    let index = 0;
+    const tick = () => {
+      target.textContent = value.slice(0, index);
+      index += 1;
+      if (index <= value.length) {
+        window.setTimeout(tick, speed);
+      } else if (onComplete) {
+        onComplete();
+      }
+    };
+    tick();
+  };
+
+  window.setTimeout(() => {
+    typeLine(prefixText, prefixValue, 76, () => {
+      setCursor(nameCursor);
+      window.setTimeout(() => typeLine(name, nameValue, 132), 180);
+    });
+  }, 220);
+})();
 
 // Interactive Hero gate: keep the resume behind a deliberate entry moment.
 (() => {
