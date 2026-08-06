@@ -16,6 +16,7 @@
     --blue2: #6eb5ff;
     --purple: #a78bfa;
     --green: #34d399;
+    --wechat-green: #07c160;
     --amber: #f59e0b;
     --pink: #f472b6;
     --teal: #22d3ee;
@@ -77,7 +78,8 @@
   }
 
   /* ── INTERACTIVE HERO GATE ── */
-  body.hero-gate-open { overflow: hidden; }
+  body.hero-gate-open,
+  body.wechat-modal-open { overflow: hidden; }
   .hero-gate[hidden] { display: none; }
   .hero-gate {
     --gate-pointer-x: 50vw;
@@ -616,71 +618,386 @@
   .nav-item:hover .nav-status { opacity: 1; box-shadow: 0 0 12px rgba(var(--nav-accent-rgb),0.9); }
   .sidebar-footer {
     margin-top: auto;
-    margin-left: 12px;
-    margin-right: 12px;
-    padding: 14px 11px 0;
+    margin-left: 8px;
+    margin-right: 8px;
+    display: grid;
+    gap: 8px;
+    padding: 14px 8px 8px;
     border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
+    border-radius: 14px;
     background: rgba(24,35,45,0.72);
   }
   .sidebar-footer::before {
     content: '// CONTACT_READY';
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 2px;
     color: var(--green);
     font: 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
     letter-spacing: 0.08em;
   }
   .sidebar-contact {
     width: 100%;
+    min-height: 46px;
     display: flex;
     align-items: center;
     gap: 8px;
-    border: 0;
-    border-radius: 8px;
-    background: transparent;
-    font-size: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 11px;
+    background: rgba(9,16,23,0.42);
+    font-size: 12px;
     font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-    color: var(--text2);
+    color: var(--text3);
     text-align: left;
-    padding: 6px 5px;
-    margin: 0 -5px 2px;
+    padding: 6px;
+    margin: 0;
     cursor: pointer;
-    transition: color 0.18s, background 0.18s;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.025);
+    transition: color 0.18s, background 0.18s, border-color 0.18s, transform 0.18s, box-shadow 0.18s;
   }
-  .sidebar-contact svg {
-    width: 14px;
-    height: 14px;
+  .sidebar-contact__icon {
+    width: 29px;
+    height: 29px;
     flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(110,181,255,0.2);
+    border-radius: 8px;
+    color: var(--blue2);
+    background: rgba(79,156,245,0.07);
+    transition: color 0.18s, border-color 0.18s, background 0.18s, transform 0.18s;
+  }
+  .sidebar-contact__icon svg {
+    width: 16px;
+    height: 16px;
   }
   .sidebar-contact-value {
     min-width: 0;
+    flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    letter-spacing: 0.01em;
   }
   .sidebar-copy-hint {
-    margin-left: auto;
-    font-size: 10px;
-    color: var(--blue2);
-    opacity: 0;
-    transform: translateX(4px);
-    transition: opacity 0.18s, transform 0.18s;
+    display: none;
   }
   .sidebar-contact:hover,
   .sidebar-contact:focus-visible {
-    color: var(--blue2);
-    background: rgba(79,156,245,0.1);
+    color: var(--text);
+    border-color: rgba(110,181,255,0.38);
+    background: rgba(79,156,245,0.105);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 8px 18px rgba(0,0,0,0.15);
+    transform: translateY(-1px);
     outline: none;
   }
   .sidebar-contact.is-copied {
     color: var(--green);
+    border-color: rgba(52,211,153,0.38);
     background: rgba(52,211,153,0.1);
   }
-  .sidebar-contact:hover .sidebar-copy-hint,
-  .sidebar-contact:focus-visible .sidebar-copy-hint {
-    opacity: 1;
-    transform: translateX(0);
+  .sidebar-contact:hover .sidebar-contact__icon,
+  .sidebar-contact:focus-visible .sidebar-contact__icon {
+    border-color: rgba(110,181,255,0.48);
+    background: rgba(79,156,245,0.14);
+    transform: scale(1.03);
+  }
+  .sidebar-contact:active { transform: translateY(0) scale(0.985); }
+
+  /* ── WECHAT ENTRY + BADGE OVERLAY ── */
+  .sidebar-wechat-trigger {
+    width: 100%;
+    min-height: 58px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 9px 10px;
+    margin: 0;
+    border: 1px solid rgba(7,193,96,0.46);
+    border-radius: 11px;
+    color: var(--text);
+    background:
+      linear-gradient(135deg, rgba(7,193,96,0.12), rgba(255,255,255,0.025)),
+      rgba(14,22,30,0.86);
+    box-shadow: inset 0 0 18px rgba(7,193,96,0.055), 0 10px 28px rgba(0,0,0,0.16);
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
+  }
+  .sidebar-wechat-trigger:hover,
+  .sidebar-wechat-trigger:focus-visible {
+    transform: translateY(-2px);
+    border-color: rgba(7,193,96,0.88);
+    background:
+      linear-gradient(135deg, rgba(7,193,96,0.2), rgba(255,255,255,0.045)),
+      rgba(16,25,34,0.96);
+    box-shadow: inset 0 0 22px rgba(7,193,96,0.1), 0 14px 32px rgba(0,0,0,0.22), 0 0 24px rgba(7,193,96,0.1);
+    outline: none;
+  }
+  .sidebar-wechat-trigger:active { transform: translateY(0) scale(0.985); }
+  .sidebar-wechat-trigger__mark {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(7,193,96,0.58);
+    border-radius: 8px;
+    color: var(--wechat-green);
+    background: rgba(7,193,96,0.1);
+    box-shadow: inset 0 0 12px rgba(7,193,96,0.1);
+  }
+  .sidebar-wechat-trigger__mark svg { width: 21px; height: 21px; }
+  .sidebar-wechat-trigger__copy { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .sidebar-wechat-trigger__copy strong { font-size: 13px; font-weight: 650; letter-spacing: 0.05em; }
+  .sidebar-wechat-trigger__copy small {
+    color: rgba(52,211,153,0.82);
+    font: 8px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+  }
+  .sidebar-wechat-trigger__arrow {
+    margin-left: auto;
+    color: rgba(52,211,153,0.9);
+    font: 16px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+    transition: transform 0.22s ease;
+  }
+  .sidebar-wechat-trigger:hover .sidebar-wechat-trigger__arrow,
+  .sidebar-wechat-trigger:focus-visible .sidebar-wechat-trigger__arrow { transform: translate(2px, -2px); }
+
+  .wechat-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1350;
+    overflow: hidden;
+    background: rgba(2,4,7,0.93);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateZ(0);
+    will-change: opacity;
+    transition: opacity 0.42s ease;
+  }
+  .wechat-overlay.is-open { opacity: 1; pointer-events: auto; }
+  .wechat-overlay__grain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.2;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.15) 0 0.45px, transparent 0.9px);
+    background-size: 5px 5px;
+    mix-blend-mode: screen;
+  }
+  .wechat-overlay__headline {
+    position: absolute;
+    left: 50%;
+    top: 51%;
+    z-index: 0;
+    width: 100%;
+    transform: translate(-50%, -50%);
+    color: rgba(255,255,255,0.027);
+    font-size: clamp(150px, 28vw, 520px);
+    font-weight: 950;
+    line-height: 0.72;
+    letter-spacing: -0.09em;
+    text-align: center;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .wechat-overlay__close {
+    position: absolute;
+    top: clamp(28px, 4.6vh, 58px);
+    right: clamp(26px, 4.2vw, 74px);
+    z-index: 5;
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,0.26);
+    border-radius: 50%;
+    color: rgba(255,255,255,0.86);
+    background: rgba(7,9,12,0.38);
+    cursor: pointer;
+    font: 300 30px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+    transition: border-color 0.22s ease, background 0.22s ease, transform 0.22s ease;
+  }
+  .wechat-overlay__close:hover,
+  .wechat-overlay__close:focus-visible { border-color: rgba(255,255,255,0.66); background: rgba(255,255,255,0.08); transform: rotate(8deg); outline: none; }
+  .wechat-modal-shell {
+    --lanyard-height: clamp(94px, 16vh, 190px);
+    position: relative;
+    z-index: 2;
+    width: min(430px, calc(100vw - 42px));
+    height: 100vh;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+  }
+  .wechat-card__lanyard {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 44px;
+    height: var(--lanyard-height);
+    transform: translateX(-50%);
+    transform-origin: 50% 0;
+    opacity: 0;
+    border-left: 1px solid rgba(255,255,255,0.14);
+    border-right: 1px solid rgba(0,0,0,0.34);
+    background: linear-gradient(90deg, #d92f26 0%, #f04438 23%, #ed3a30 74%, #be211b 100%);
+    box-shadow: 0 14px 26px rgba(0,0,0,0.24);
+    contain: layout paint;
+    will-change: height, transform, opacity;
+  }
+  .wechat-card__lanyard::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -11px;
+    width: 58px;
+    height: 22px;
+    transform: translateX(-50%);
+    border: 1px solid rgba(15,20,24,0.32);
+    border-radius: 7px;
+    background: linear-gradient(#dfe5e6, #aeb8ba);
+    box-shadow: 0 7px 12px rgba(0,0,0,0.26), inset 0 1px rgba(255,255,255,0.7);
+    z-index: 2;
+  }
+  .wechat-card__clip {
+    position: absolute;
+    left: 50%;
+    bottom: -24px;
+    width: 24px;
+    height: 22px;
+    transform: translateX(-50%);
+    border-radius: 3px 3px 8px 8px;
+    background: linear-gradient(#35414a, #11171c);
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.12);
+    z-index: 1;
+  }
+  .wechat-card {
+    --badge-ink: #10202b;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 20px;
+    color: var(--badge-ink);
+    background: #f0eee7;
+    box-shadow: 0 44px 90px rgba(0,0,0,0.58), 0 0 0 7px rgba(255,255,255,0.035), inset 0 0 0 1px rgba(16,32,43,0.14);
+    margin-top: var(--lanyard-height);
+    transform: translate3d(0,-560px,0) rotate(-11deg);
+    transform-origin: 50% 0;
+    opacity: 0;
+    pointer-events: auto;
+    backface-visibility: hidden;
+    will-change: transform, opacity;
+    contain: paint;
+  }
+  .wechat-card__visual {
+    position: relative;
+    height: clamp(238px, 31vh, 310px);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(16,32,43,0.2);
+    background:
+      radial-gradient(circle at 50% 32%, rgba(255,255,255,0.72), transparent 42%),
+      linear-gradient(145deg, #cbd8d8 0%, #edf0eb 58%, #b9c9c7 100%);
+  }
+  .wechat-card__visual::before {
+    content: '';
+    position: absolute;
+    inset: 20px;
+    border: 1px solid rgba(16,32,43,0.12);
+    border-radius: 50%;
+  }
+  .wechat-card__avatar {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+  }
+  .wechat-card__avatar img {
+    width: min(82%, 330px);
+    height: calc(100% - 18px);
+    object-fit: contain;
+    object-position: 50% 50%;
+    transform: none;
+    filter: drop-shadow(0 13px 12px rgba(16,32,43,0.22));
+  }
+  .wechat-card__visual-index {
+    position: absolute;
+    right: 18px;
+    bottom: 15px;
+    z-index: 2;
+    color: rgba(16,32,43,0.58);
+    font: 700 8px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+    letter-spacing: 0.15em;
+  }
+  .wechat-card__body { padding: 22px 27px 19px; }
+  .wechat-card__top,
+  .wechat-card__footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .wechat-card__top {
+    padding-bottom: 12px;
+    color: rgba(16,32,43,0.62);
+    font: 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+    letter-spacing: 0.14em;
+  }
+  .wechat-card__top strong { color: #197b9f; font-weight: 750; }
+  .wechat-card__identity { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; padding: 3px 0 17px; border-bottom: 1px solid rgba(16,32,43,0.16); }
+  .wechat-card__identity-copy { min-width: 0; }
+  .wechat-card__identity-copy small { display: block; margin-bottom: 7px; color: rgba(16,32,43,0.5); font: 8px/1 ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: 0.15em; }
+  .wechat-card__identity-copy strong { display: block; font-size: 31px; line-height: 1; letter-spacing: 0.08em; }
+  .wechat-card__identity-copy span { display: block; margin-top: 8px; color: rgba(16,32,43,0.64); font-size: 10px; line-height: 1.45; }
+  .wechat-card__role { flex: 0 0 auto; color: #197b9f; font: 750 8px/1.3 ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: 0.12em; text-align: right; }
+  .wechat-card__contact { display: grid; grid-template-columns: 154px minmax(0,1fr); align-items: center; gap: 20px; padding: 18px 0 16px; }
+  .wechat-qr-code {
+    width: 154px;
+    height: 154px;
+    padding: 8px;
+    border: 1px solid rgba(16,32,43,0.12);
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 8px 18px rgba(16,32,43,0.14);
+  }
+  .wechat-qr-crop { position: relative; width: 100%; height: 100%; overflow: hidden; background: #fff; }
+  .wechat-qr-crop img {
+    position: absolute;
+    top: -52%;
+    left: -24.17%;
+    width: 148%;
+    max-width: none;
+    height: auto;
+    display: block;
+  }
+  .wechat-card__contact-copy small { display: block; color: rgba(16,32,43,0.48); font: 8px/1 ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: 0.18em; }
+  .wechat-card__contact-copy strong { display: block; margin: 9px 0 11px; color: #197b9f; font-size: 22px; line-height: 1; letter-spacing: 0.08em; }
+  .wechat-card__contact-copy span { display: block; color: rgba(16,32,43,0.58); font-size: 10px; line-height: 1.55; }
+  .wechat-card__footer { padding-top: 13px; border-top: 1px solid rgba(16,32,43,0.16); color: rgba(16,32,43,0.48); font: 8px/1 ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: 0.12em; }
+  .wechat-card__footer strong { color: #197b9f; font-weight: 750; }
+  .wechat-overlay__hint { position: absolute; left: clamp(28px,4.4vw,78px); bottom: clamp(24px,4.5vh,58px); z-index: 3; margin: 0; color: rgba(230,237,243,0.42); font: 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: 0.16em; }
+  @media (max-width: 768px) {
+    .wechat-overlay__close { top: 18px; right: 18px; width: 47px; height: 47px; font-size: 25px; }
+    .wechat-overlay__headline { top: 54%; font-size: 44vw; }
+    .wechat-modal-shell { --lanyard-height: clamp(70px, 11vh, 104px); width: min(352px, calc(100vw - 30px)); }
+    .wechat-card__visual { height: clamp(188px, 28vh, 228px); }
+    .wechat-card__body { padding: 16px 19px 15px; }
+    .wechat-card__identity { padding-bottom: 12px; }
+    .wechat-card__identity-copy strong { font-size: 25px; }
+    .wechat-card__identity-copy span { font-size: 9px; }
+    .wechat-card__contact { grid-template-columns: 124px minmax(0,1fr); gap: 15px; padding: 13px 0 12px; }
+    .wechat-qr-code { width: 124px; height: 124px; padding: 6px; }
+    .wechat-card__contact-copy strong { font-size: 18px; }
+    .wechat-overlay__hint { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wechat-overlay.is-open .wechat-card { transform: translate3d(0,0,0) rotate(0deg); opacity: 1; }
+    .wechat-overlay.is-open .wechat-card__lanyard { transform: translateX(-50%); opacity: 1; }
+    .sidebar-wechat-trigger,
+    .sidebar-wechat-trigger__arrow,
+    .wechat-overlay__close { transition-duration: 1ms; }
   }
 
   /* ── MAIN ── */
@@ -2008,18 +2325,72 @@
     </a>
   </div>
   <div class="sidebar-footer">
+    <button type="button" class="sidebar-wechat-trigger" data-wechat-open aria-haspopup="dialog" aria-controls="wechatModal">
+      <span class="sidebar-wechat-trigger__mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" fill="currentColor">
+          <path d="M20.1 6.5C10.7 6.5 3 12.7 3 20.4c0 4.2 2.4 8 6.2 10.6l-1.5 4.8 5.4-2.7c2.2.8 4.5 1.2 7 1.2.7 0 1.4 0 2.1-.1a12.3 12.3 0 0 1-1.1-5c0-7.5 6.7-13.6 15.3-14.4-2.6-4.9-8.8-8.3-16.3-8.3Z"/>
+          <path d="M45 29.2c0-6.8-6.7-12.3-14.9-12.3s-14.9 5.5-14.9 12.3 6.7 12.3 14.9 12.3c2.1 0 4.2-.4 6-1.1l4.7 2.3-1.2-4.1c3.3-2.3 5.4-5.6 5.4-9.4Z"/>
+          <circle cx="14.3" cy="17.8" r="1.8" fill="#0f1b18"/>
+          <circle cx="25" cy="17.8" r="1.8" fill="#0f1b18"/>
+          <circle cx="25.4" cy="27.2" r="1.55" fill="#0f1b18"/>
+          <circle cx="35.2" cy="27.2" r="1.55" fill="#0f1b18"/>
+        </svg>
+      </span>
+      <span class="sidebar-wechat-trigger__copy"><strong>添加微信</strong><small>WECHAT CONTACT</small></span>
+      <span class="sidebar-wechat-trigger__arrow" aria-hidden="true">↗</span>
+    </button>
     <button type="button" class="sidebar-contact" data-copy-value="cyh991008@gmail.com" data-copy-kind="邮箱" aria-label="复制邮箱 cyh991008@gmail.com">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>
+      <span class="sidebar-contact__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></span>
       <span class="sidebar-contact-value">cyh991008@gmail.com</span>
       <span class="sidebar-copy-hint">复制</span>
     </button>
     <button type="button" class="sidebar-contact" data-copy-value="136-1008-9696" data-copy-kind="联系电话" aria-label="复制联系电话 136-1008-9696">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6.6 10.8a15.5 15.5 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24c1.1.36 2.28.54 3.46.54a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.55 21 3 13.45 3 4.14a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.18.18 2.35.54 3.46a1 1 0 0 1-.24 1z"/></svg>
+      <span class="sidebar-contact__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6.6 10.8a15.5 15.5 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24c1.1.36 2.28.54 3.46.54a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.55 21 3 13.45 3 4.14a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.18.18 2.35.54 3.46a1 1 0 0 1-.24 1z"/></svg></span>
       <span class="sidebar-contact-value">136-1008-9696</span>
       <span class="sidebar-copy-hint">复制</span>
     </button>
   </div>
 </nav>
+
+<div class="wechat-overlay" id="wechatModal" role="dialog" aria-modal="true" aria-labelledby="wechatCardTitle" aria-hidden="true" inert>
+  <div class="wechat-overlay__grain" aria-hidden="true"></div>
+  <div class="wechat-overlay__headline" aria-hidden="true">HELLO</div>
+  <button class="wechat-overlay__close" type="button" data-wechat-close aria-label="关闭微信联系卡">×</button>
+  <div class="wechat-modal-shell">
+    <div class="wechat-card__lanyard" aria-hidden="true"><span class="wechat-card__clip"></span></div>
+    <article class="wechat-card" aria-describedby="wechatCardHint">
+      <div class="wechat-card__visual">
+        <div class="wechat-card__avatar">
+          <img src="optimized/assets/ip/chenyihan-ip.webp" alt="陈奕翰个人形象" loading="eager" decoding="async" width="1024" height="1536">
+        </div>
+        <span class="wechat-card__visual-index">CHENYIHAN / 01</span>
+      </div>
+      <div class="wechat-card__body">
+        <div class="wechat-card__top"><span>CREATOR PASS / 01</span><strong>WECHAT</strong></div>
+        <div class="wechat-card__identity">
+        <div class="wechat-card__identity-copy">
+          <small>NAME / CREATOR</small>
+          <strong id="wechatCardTitle">陈奕翰</strong>
+          <span>数码 3C · 内容创作 · IP 运营 · AIGC</span>
+        </div>
+          <div class="wechat-card__role">TECH<br>MEDIA · IP</div>
+        </div>
+        <div class="wechat-card__contact">
+          <div class="wechat-qr-code" aria-label="陈奕翰微信二维码">
+            <div class="wechat-qr-crop"><img src="assets/contact/wechat-qr.jpg" alt="陈奕翰微信二维码" loading="eager" decoding="async" width="888" height="1131"></div>
+          </div>
+          <div class="wechat-card__contact-copy">
+            <small>WECHAT / SCAN</small>
+            <strong>YIHAN</strong>
+            <span id="wechatCardHint">扫描二维码<br>添加我为微信好友</span>
+          </div>
+        </div>
+        <div class="wechat-card__footer"><span><strong>SCAN TO CONNECT</strong></span><span>GUANGZHOU · CN</span></div>
+      </div>
+    </article>
+  </div>
+  <p class="wechat-overlay__hint">点击空白处关闭 · CLICK OUTSIDE OR PRESS ESC</p>
+</div>
 
 <nav class="mobile-dock" aria-label="移动端主要导航" inert>
   <a class="mobile-nav-item active" href="#resume" onclick="setActive(this)">简历</a>
@@ -3118,6 +3489,161 @@ document.addEventListener('click', async event => {
     showCopyToast('复制失败，请手动复制', true);
   }
 });
+
+// WeChat contact overlay: one requestAnimationFrame loop controls the badge and
+// lanyard together, avoiding the visible handoff between separate CSS animations.
+(() => {
+  const modal = document.getElementById('wechatModal');
+  const openers = [...document.querySelectorAll('[data-wechat-open]')];
+  const closers = [...document.querySelectorAll('[data-wechat-close]')];
+  const closeButton = modal?.querySelector('.wechat-overlay__close');
+  const shell = modal?.querySelector('.wechat-modal-shell');
+  const card = modal?.querySelector('.wechat-card');
+  const lanyard = modal?.querySelector('.wechat-card__lanyard');
+  if (!modal || !shell || !card || !lanyard || !openers.length) return;
+
+  let lastTrigger = null;
+  let motionFrame = 0;
+  let dropDelayTimer = 0;
+  let dropStartedAt = 0;
+  let idleStartedAt = 0;
+  let restLength = 140;
+  let resetTimer = 0;
+  let currentRig = { x: 0, y: -560, rotation: -11, opacity: 0 };
+  const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+  const measureRig = () => {
+    lanyard.style.height = '';
+    restLength = parseFloat(window.getComputedStyle(lanyard).height) || 140;
+  };
+
+  const drawRig = (x, y, rotation, opacity = 1) => {
+    currentRig = { x, y, rotation, opacity };
+    card.style.transform = `translate3d(${x.toFixed(3)}px,${y.toFixed(3)}px,0) rotate(${rotation.toFixed(3)}deg)`;
+    card.style.opacity = String(clamp(opacity, 0, 1));
+
+    const vertical = Math.max(0, restLength + y);
+    const strapLength = Math.hypot(x, vertical);
+    const strapAngle = vertical > 0.01 ? Math.atan2(x, vertical) * 180 / Math.PI : 0;
+    lanyard.style.height = `${strapLength.toFixed(3)}px`;
+    lanyard.style.transform = `translateX(-50%) rotate(${strapAngle.toFixed(3)}deg) translateZ(0)`;
+    lanyard.style.opacity = String(clamp(vertical / 52, 0, 1));
+  };
+
+  const stopMotion = () => {
+    window.clearTimeout(dropDelayTimer);
+    dropDelayTimer = 0;
+    if (motionFrame) window.cancelAnimationFrame(motionFrame);
+    motionFrame = 0;
+  };
+
+  // Soft under-damped spring: quick gravity-led arrival, one restrained rebound,
+  // then an exponential settle. The rotation decays separately like a hanging card.
+  const springOffset = seconds => {
+    const dampingRatio = 0.72;
+    const angularFrequency = 7.4;
+    const dampedFrequency = angularFrequency * Math.sqrt(1 - dampingRatio ** 2);
+    const phase = dampingRatio / Math.sqrt(1 - dampingRatio ** 2);
+    return -560 * Math.exp(-dampingRatio * angularFrequency * seconds)
+      * (Math.cos(dampedFrequency * seconds) + phase * Math.sin(dampedFrequency * seconds));
+  };
+
+  const idleFrame = timestamp => {
+    if (!modal.classList.contains('is-open')) return;
+    const seconds = (timestamp - idleStartedAt) / 1000;
+    const amplitude = 0.55 + 0.45 * (1 - Math.exp(-seconds / 4));
+    const x = amplitude * (4.4 * Math.sin(seconds * 0.78) + 1.5 * Math.sin(seconds * 0.31));
+    const y = amplitude * 2.6 * Math.sin(seconds * 0.52);
+    const rotation = x * 0.19 + amplitude * 0.35 * Math.sin(seconds * 0.42);
+    drawRig(x, y, rotation, 1);
+    motionFrame = window.requestAnimationFrame(idleFrame);
+  };
+
+  const dropFrame = timestamp => {
+    if (!modal.classList.contains('is-open')) return;
+    const seconds = (timestamp - dropStartedAt) / 1000;
+    const rotationProgress = clamp(seconds / 1.65, 0, 1);
+    const rotation = -11 * (1 - rotationProgress) ** 3;
+    const y = seconds >= 1.5 ? 0 : springOffset(seconds);
+    const opacity = clamp(seconds / 0.34, 0, 1);
+    drawRig(0, y, rotation, opacity);
+
+    if (seconds < 1.5) {
+      motionFrame = window.requestAnimationFrame(dropFrame);
+      return;
+    }
+
+    drawRig(0, 0, 0, 1);
+    idleStartedAt = timestamp;
+    motionFrame = window.requestAnimationFrame(idleFrame);
+  };
+
+  const resetRig = () => {
+    measureRig();
+    drawRig(0, -560, -11, 0);
+  };
+
+  const closeWechat = () => {
+    if (!modal.classList.contains('is-open')) return;
+    stopMotion();
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    modal.inert = true;
+    document.body.classList.remove('wechat-modal-open');
+    window.clearTimeout(resetTimer);
+    resetTimer = window.setTimeout(() => {
+      if (!modal.classList.contains('is-open')) resetRig();
+    }, 430);
+    if (lastTrigger) lastTrigger.focus({ preventScroll: true });
+  };
+
+  openers.forEach(trigger => trigger.addEventListener('click', () => {
+    lastTrigger = trigger;
+    window.clearTimeout(resetTimer);
+    stopMotion();
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    modal.inert = false;
+    document.body.classList.add('wechat-modal-open');
+    measureRig();
+
+    if (reducedMotionQuery.matches) {
+      drawRig(0, 0, 0, 1);
+    } else {
+      drawRig(0, -560, -11, 0);
+      // Let the dark stage finish its first composite before the badge moves.
+      // This mirrors the reference timing and prevents a first-frame hitch.
+      dropDelayTimer = window.setTimeout(() => {
+        if (!modal.classList.contains('is-open')) return;
+        dropStartedAt = window.performance.now();
+        motionFrame = window.requestAnimationFrame(dropFrame);
+      }, 280);
+    }
+
+    window.setTimeout(() => closeButton?.focus({ preventScroll: true }), 420);
+  }));
+
+  closers.filter(trigger => trigger !== modal).forEach(trigger => trigger.addEventListener('click', event => {
+    event.preventDefault();
+    closeWechat();
+  }));
+  modal.addEventListener('click', event => {
+    if (event.target === modal || event.target.classList.contains('wechat-overlay__grain')) closeWechat();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closeWechat();
+  });
+
+  window.addEventListener('resize', () => {
+    if (!modal.classList.contains('is-open')) return;
+    measureRig();
+    drawRig(currentRig.x, currentRig.y, currentRig.rotation, currentRig.opacity);
+  });
+
+  resetRig();
+})();
 
 // Keep the loader hook stable; chapter separators are static siblings with
 // one shared rhythm, so dynamic portfolio refreshes must not add extra breaks.
