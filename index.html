@@ -916,16 +916,19 @@
   .wechat-card__avatar {
     position: absolute;
     inset: 0;
+    width: 100%;
+    height: 100%;
     z-index: 1;
     display: grid;
     place-items: center;
   }
   .wechat-card__avatar img {
-    width: min(82%, 330px);
-    height: calc(100% - 18px);
+    width: auto;
+    max-width: none;
+    height: calc(clamp(238px, 31vh, 310px) * 1.25);
     object-fit: contain;
     object-position: 50% 50%;
-    transform: none;
+    transform: translateY(10%);
     filter: drop-shadow(0 13px 12px rgba(16,32,43,0.22));
   }
   .wechat-card__visual-index {
@@ -984,6 +987,7 @@
     .wechat-overlay__headline { top: 54%; font-size: 44vw; }
     .wechat-modal-shell { --lanyard-height: clamp(70px, 11vh, 104px); width: min(352px, calc(100vw - 30px)); }
     .wechat-card__visual { height: clamp(188px, 28vh, 228px); }
+    .wechat-card__avatar img { height: calc(clamp(188px, 28vh, 228px) * 1.25); }
     .wechat-card__body { padding: 16px 19px 15px; }
     .wechat-card__identity { padding-bottom: 12px; }
     .wechat-card__identity-copy strong { font-size: 25px; }
@@ -2523,7 +2527,7 @@
     <article class="wechat-card" aria-describedby="wechatCardHint">
       <div class="wechat-card__visual">
         <div class="wechat-card__avatar">
-          <img src="optimized/assets/ip/chenyihan-ip.webp" alt="陈奕翰个人形象" loading="eager" decoding="async" width="1024" height="1536">
+          <img src="optimized/assets/ip/chenyihan-badge-halfbody.webp" alt="陈奕翰手持手机的半身IP形象" loading="eager" decoding="async" width="1254" height="1254">
         </div>
         <span class="wechat-card__visual-index">CHENYIHAN / 01</span>
       </div>
