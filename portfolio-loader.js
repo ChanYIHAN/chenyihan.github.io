@@ -164,6 +164,7 @@ const PORTFOLIO_CONFIG = {
         container.appendChild(sec);
       });
       stabilizeCoverImages(container);
+      window.mountPortfolioCarousels?.();
       window.mountPortfolioMascots?.();
 
       console.log(`[portfolio-loader] ${sectionId}: 已加载 ${items.length} 条动态数据`);
