@@ -24,7 +24,7 @@
       const carouselLimit = 8;
       const items=cards.slice(0, carouselLimit).map(card=>({title:card.querySelector('.card-title').textContent.trim(),src:card.querySelector('img')?.getAttribute('src')||'',fallbacks:card.querySelector('img')?.dataset.coverFallbacks||'[]',href:card.getAttribute('href'),tags:card.querySelector('.card-tags')?.textContent.trim()||''}));
       const root=doc.createElement('div');root.className='editorial-carousel';root.setAttribute('role','region');root.setAttribute('aria-label',section.querySelector('.portfolio-section-title')?.textContent+'轮播');root.tabIndex=0;
-      root.innerHTML='<a class="ec-image" target="_blank" rel="noopener noreferrer"><img alt=""></a><div class="ec-copy"><img class="ec-frost" alt="" aria-hidden="true"><div class="ec-content"><h3><a target="_blank" rel="noopener noreferrer"></a></h3></div><div class="ec-controls"><span class="ec-count"></span><div class="ec-dots"></div><button aria-label="上一项"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 7-5 5 5 5"/></svg></button><button aria-label="下一项"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 7 5 5-5 5"/></svg></button></div></div><div class="ec-side"><button><img alt=""><span></span></button><button><img alt=""><span></span></button></div>';
+      root.innerHTML='<a class="ec-image" target="_blank" rel="noopener noreferrer"><img alt=""></a><div class="ec-copy"><img class="ec-frost" alt="" aria-hidden="true"><div class="ec-content"><h3><a target="_blank" rel="noopener noreferrer"></a></h3></div><div class="ec-controls"><span class="ec-count"></span><div class="ec-dots"></div><button aria-label="上一项"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 7-5 5 5 5"/></svg></button><button aria-label="下一项"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 7 5 5-5 5"/></svg></button></div></div>';
       section.append(root);
       section.classList.add('ec-ready');
       if (cards.length > carouselLimit) {
@@ -46,7 +46,6 @@
         title.title=item.title;
         root.querySelector('.ec-count').textContent=String(current+1).padStart(2,'0')+' / '+String(items.length).padStart(2,'0');
         [...dots.children].forEach((dot,i)=>dot.setAttribute('aria-current',String(i===current)));
-        root.querySelectorAll('.ec-side button').forEach((b,i)=>{const next=(current+i+1)%items.length;const other=items[next];setImage(b.querySelector('img'),other);b.querySelector('span').textContent=other.title;b.setAttribute('aria-label','切换到 '+other.title);b.onclick=()=>show(next)});
         if(!reducedMotion.matches) root.querySelector('.ec-content').animate([{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'translateY(0)'}],{duration:400,easing:'ease-out'});
       };
       const controls=root.querySelectorAll('.ec-controls>button');controls[0].onclick=()=>show(current-1);controls[1].onclick=()=>show(current+1);
