@@ -1503,7 +1503,10 @@
 
           <div class="form-group full">
             <label>封面图 URL</label>
-            <input type="text" id="fCoverUrl" placeholder="输入图片 URL 或上传到 Supabase Storage 后填入" oninput="previewCover()">
+            <input type="text" id="fCoverUrl" placeholder="输入本站或本站 GitHub 仓库的图片链接" oninput="clearCoverFile(); previewCover()">
+            <label for="fCoverFile">或上传图片文件</label>
+            <input type="file" id="fCoverFile" accept="image/png,image/jpeg,image/webp" onchange="previewCoverFile()">
+            <p id="coverOptimizeStatus" role="status" style="color:var(--text-muted);font-size:13px;line-height:1.6;margin:8px 0">保存时自动生成 WebP 小图和大图，保留原图。支持 PNG/JPG/静态 WebP，≤5MB、≤800 万像素；其他域名请下载后上传。</p>
             <img id="coverPreviewImg" class="cover-preview" alt="封面预览">
           </div>
 
@@ -1971,6 +1974,7 @@
       document.getElementById('modalTitle').textContent = '新增作品';
       document.getElementById('editId').value = '';
       document.getElementById('itemForm').reset();
+      resetCoverUpload();
       document.getElementById('coverPreviewImg').classList.remove('show');
       selectedTags = [];
       renderTagSelector();
@@ -1981,6 +1985,7 @@
       await ensureTagsLoaded();
       const item = allItems.find(i => i.id === id);
       if (!item) return;
+      resetCoverUpload();
 
       document.getElementById('modalTitle').textContent = '编辑作品';
       document.getElementById('editId').value = id;
@@ -1995,7 +2000,7 @@
       // 封面预览
       if (item.cover_url) {
         const img = document.getElementById('coverPreviewImg');
-        img.src = item.cover_url;
+        img.src = item.cover_assets?.source === item.cover_url ? (item.cover_assets.thumbnail?.url || item.cover_url) : item.cover_url;
         img.classList.add('show');
       } else {
         document.getElementById('coverPreviewImg').classList.remove('show');
@@ -2116,6 +2121,7 @@
 
     async function saveItem() {
       const btn = document.getElementById('saveItemBtn');
+      if (btn.disabled) return;
       const title   = document.getElementById('fTitle').value.trim();
       const section = document.getElementById('fSection').value;
       if (!title) return showToast('请填写作品标题', 'error');
@@ -2139,6 +2145,15 @@
 
       try {
         const editId = document.getElementById('editId').value;
+        if (isLocalPreview) throw new Error('本地预览为只读，请正式登录后保存');
+        const existing = allItems.find(item => item.id === editId);
+        const optimized = await prepareCoverAssets(payload.cover_url, existing, message => {
+          btn.textContent = message;
+          document.getElementById('coverOptimizeStatus').textContent = message;
+        });
+        payload.cover_url = optimized.cover_url;
+        payload.cover_assets = optimized.cover_assets;
+        btn.textContent = '保存作品中...';
         if (editId) {
           await sbFetch(`portfolio_items?id=eq.${editId}`, 'PATCH', payload);
           showToast('作品已更新', 'success');
@@ -2300,5 +2315,6 @@
     });
   </script>
   <script src="content-admin.js"></script>
+  <script src="cover-upload.js"></script>
 </body>
 </html>

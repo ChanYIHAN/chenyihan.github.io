@@ -23,6 +23,21 @@ CREATE TABLE IF NOT EXISTS portfolio_items (
 
 -- 兼容已创建的旧表；页面内容编辑器也复用该字段保存结构化 JSON。
 ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS cover_assets JSONB;
+
+-- Cover processing writes with server-only credentials. Browser clients cannot upload
+-- arbitrary objects directly. Originals remain private; generated covers are public.
+INSERT INTO storage.buckets (id,name,public,file_size_limit,allowed_mime_types) VALUES
+  ('portfolio-covers','portfolio-covers',true,5242880,ARRAY['image/webp','application/json']),
+  ('portfolio-originals','portfolio-originals',false,5242880,ARRAY['image/png','image/jpeg','image/webp'])
+ON CONFLICT (id) DO NOTHING;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname='storage' AND policyname='Portfolio admins may read preserved originals') THEN
+    CREATE POLICY "Portfolio admins may read preserved originals"
+      ON storage.objects FOR SELECT TO authenticated
+      USING (bucket_id='portfolio-originals' AND ((SELECT auth.jwt())->'app_metadata'->>'role')='admin');
+  END IF;
+END $$;
 
 -- 2. 分类表（管理各大版块下的子分类）
 CREATE TABLE IF NOT EXISTS portfolio_categories (

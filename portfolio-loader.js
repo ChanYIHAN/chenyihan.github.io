@@ -16,7 +16,9 @@ const PORTFOLIO_CONFIG = {
   const { supabaseUrl, supabaseAnon } = PORTFOLIO_CONFIG;
   const localPreviewHosts = new Set(['localhost', '127.0.0.1', '::1']);
 
-  if (localPreviewHosts.has(window.location.hostname)) {
+  const dynamicPreview = new URLSearchParams(window.location.search).get('dynamic') === '1';
+
+  if (localPreviewHosts.has(window.location.hostname) && !dynamicPreview) {
     console.info('[portfolio-loader] 本地预览模式：跳过 Supabase 动态请求，保留静态作品内容。');
     return;
   }
@@ -26,40 +28,71 @@ const PORTFOLIO_CONFIG = {
     return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  function optimizedCoverUrl(url) {
+  function coverCandidates(url) {
     const value = String(url || '').trim();
+    if (!value) return [];
 
     // The CMS used to store some covers as GitHub raw/blob URLs or the old
     // pages.dev hostname. Those hosts are unreliable on mainland mobile
     // networks, while the same images already ship with this deployment.
-    const portfolioPage = value.match(/(?:^|\/)portfolio_pages\/(page_(\d+))\.(?:png|jpe?g|webp)(?:\?.*)?$/i);
+    const portfolioPage = value.match(/(?:^|\/)portfolio_pages\/(page_\d+)\.(png|jpe?g|webp)(?:\?.*)?$/i);
     if (portfolioPage) {
-      const [, fileName, pageNumber] = portfolioPage;
-      // page_45 has not been converted to WebP yet, but its local JPG is
-      // still preferable to an external GitHub request.
-      return pageNumber === '45'
-        ? `portfolio_pages/${fileName}.jpg`
-        : `optimized/portfolio_pages/${fileName}.webp`;
+      const [, fileName, extension] = portfolioPage;
+      return [
+        `optimized/portfolio_pages/${fileName}.webp`,
+        `portfolio_pages/${fileName}.${extension.toLowerCase()}`,
+      ];
     }
 
     const localCover = value.match(/(?:^|\/)covers\/(.+?)\.(?:png|jpe?g|webp)(?:\?.*)?$/i);
     if (localCover && !/^https?:\/\//i.test(value)) {
-      return `optimized/covers/${localCover[1]}.webp`;
+      return [`optimized/covers/${localCover[1]}.webp`, value];
     }
 
-    return value;
+    return [value];
+  }
+
+  function optimizedAsset(item, kind) {
+    const assets = item.cover_assets;
+    return assets?.version === 'webp-v1' && assets.source === item.cover_url
+      ? assets[kind]?.url : null;
+  }
+
+  function coverImageMarkup(item) {
+    const thumbnail = optimizedAsset(item, 'thumbnail');
+    const candidates = coverCandidates(item.cover_url);
+    const [primary, ...fallbacks] = thumbnail ? [thumbnail, ...candidates] : candidates;
+    if (!primary) {
+      return '<div class="cover-placeholder" aria-hidden="true">16:9 IMAGE</div>';
+    }
+
+    return `<img src="${escHtml(primary)}" data-cover-fallbacks="${escHtml(JSON.stringify(fallbacks))}" alt="" loading="lazy" decoding="async">`;
   }
 
   function stabilizeCoverImages(root) {
     root.querySelectorAll('.card-cover img, .plan-cover img').forEach(img => {
-      const hideBrokenImage = () => {
+      const loadNextCover = () => {
+        let fallbacks = [];
+        try {
+          fallbacks = JSON.parse(img.dataset.coverFallbacks || '[]');
+        } catch (_) {
+          fallbacks = [];
+        }
+
+        const next = fallbacks.shift();
+        if (next) {
+          img.dataset.coverFallbacks = JSON.stringify(fallbacks);
+          img.src = next;
+          return;
+        }
+
         img.alt = '';
         img.style.display = 'none';
         img.parentElement?.classList.add('cover-load-failed');
       };
 
-      img.addEventListener('error', hideBrokenImage, { once: true });
-      if (img.complete && img.naturalWidth === 0) hideBrokenImage();
+      img.addEventListener('error', loadNextCover);
+      if (img.complete && img.naturalWidth === 0) loadNextCover();
     });
   }
 
@@ -82,9 +115,7 @@ const PORTFOLIO_CONFIG = {
 
   function renderCard(item, type) {
     const btn = type === 'video' ? '▶ 观看视频' : '↗ 阅读原文';
-    const cover = item.cover_url
-      ? `<img src="${escHtml(optimizedCoverUrl(item.cover_url))}" alt="" loading="lazy" decoding="async">`
-      : `<div style="width:100%;height:100%;background:#1a1d27;display:flex;align-items:center;justify-content:center;color:#4a4d61;font-size:32px">🖼️</div>`;
+    const cover = coverImageMarkup(item);
     return `<a class="work-card" href="${item.link ? escHtml(item.link) : '#'}" target="${item.link ? '_blank' : '_self'}"><div class="card-cover">${cover}<div class="card-cover-overlay"><span class="open-btn">${btn}</span></div></div><div class="card-body"><div class="card-tags">${renderTags(item.tags, item.tag_colors)}</div><div class="card-title">${escHtml(item.title)}</div></div></a>`;
   }
 
@@ -157,10 +188,8 @@ const PORTFOLIO_CONFIG = {
       }
 
       // 有数据 → 渲染动态卡片
-      container.innerHTML = items.map(item => {
-        const cover = item.cover_url
-          ? `<img src="${escHtml(optimizedCoverUrl(item.cover_url))}" alt="" loading="lazy" decoding="async">`
-          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#4a4d61;font-size:32px">🖼️</div>`;
+      container.innerHTML = items.map((item, index) => {
+        const cover = coverImageMarkup(item);
         const desc = item.description
           ? `<div class="plan-desc">${escHtml(item.description)}</div>`
           : '';
@@ -169,12 +198,7 @@ const PORTFOLIO_CONFIG = {
           : '';
 
         return `
-          <div class="plan-card" onclick='openPlanLightbox(${JSON.stringify({
-            cover_url: optimizedCoverUrl(item.cover_url),
-            link: item.link,
-            title: item.title,
-            description: item.description
-          })})'>
+          <div class="plan-card" role="button" tabindex="0" data-plan-index="${index}" aria-label="查看 ${escHtml(item.title)}">
             <div class="plan-cover">${cover}</div>
             <div class="plan-body">
               <div class="plan-title">${escHtml(item.title)}</div>
@@ -184,6 +208,37 @@ const PORTFOLIO_CONFIG = {
           </div>`;
       }).join('');
       stabilizeCoverImages(container);
+
+      container.querySelectorAll('[data-plan-index]').forEach(card => {
+        const openCard = () => {
+          const item = items[Number(card.dataset.planIndex)];
+          if (!item) return;
+          const candidates = coverCandidates(item.cover_url);
+          const displayedCover = card.querySelector('.plan-cover img')?.getAttribute('src');
+          const preview = optimizedAsset(item, 'preview');
+          const orderedCandidates = preview
+            ? [...new Set([preview, displayedCover, ...candidates].filter(Boolean))]
+            : displayedCover
+            ? [displayedCover, ...candidates.filter(url => url !== displayedCover)]
+            : candidates;
+
+          window.openPlanLightbox({
+            cover_url: orderedCandidates[0] || '',
+            cover_fallbacks: orderedCandidates.slice(1),
+            link: item.link,
+            title: item.title,
+            description: item.description,
+          });
+        };
+
+        card.addEventListener('click', openCard);
+        card.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openCard();
+          }
+        });
+      });
 
       console.log(`[portfolio-loader] planning: 已加载 ${items.length} 条动态数据`);
     } catch (err) {
